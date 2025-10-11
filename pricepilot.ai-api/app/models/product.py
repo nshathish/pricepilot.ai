@@ -1,37 +1,51 @@
-from datetime import date, datetime
+from typing import TYPE_CHECKING, Optional
+
+from sqlmodel import SQLModel, Field, Relationship, Column, Integer
+from datetime import datetime, UTC
 from decimal import Decimal
+from enum import Enum
 
-from sqlmodel import SQLModel, Field, Relationship
+if TYPE_CHECKING:
+    # These imports only run during type checking / IDE analysis
+    from app.models import (
+        Inventory,
+        PriceHistory,
+        SalesDaily,
+        ElasticityEstimate,
+        CompetitorPrice,
+        MarkdownEvaluation,
+        MarkdownActionLog,
+    )
 
-from app.models.product_status import ProductStatus
+
+class ProductStatus(str, Enum):
+    active = "active"
+    discontinued = "discontinued"
 
 
 class Product(SQLModel, table=True):
     __tablename__ = "products"
 
-    id: int = Field(default=None, primary_key=True, alias="product_id")
-    sku: str = Field(unique=True)
+    id: int = Field(
+        sa_column=Column("product_id", Integer, primary_key=True, autoincrement=True)
+    )
+    sku: str = Field(index=True)
     name: str
     category: str | None = None
     brand: str | None = None
-    unitCost: Decimal = Field(sa_column_kwargs={"name": "unit_cost"})
-    basePrice: Decimal = Field(sa_column_kwargs={"name": "base_price"})
-    currentPrice: Decimal = Field(sa_column_kwargs={"name": "current_price"})
-    holdingCostPerUnitPerDay: Decimal = Field(
-        default=Decimal(0),
-        sa_column_kwargs={"name": "holding_cost_per_unit_per_day"},
-    )
-    clearanceEndDate: date = Field(sa_column_kwargs={"name": "clearance_end_date"})
-    status: ProductStatus = Field(default=ProductStatus.active)
-    createdAt: datetime = Field(
-        default_factory=datetime.utcnow,
-        sa_column_kwargs={"name": "created_at"},
-    )
+
+    unit_cost: Decimal
+    base_price: Decimal
+    current_price: Decimal
+    holding_cost_per_unit_per_day: Decimal = 0
+    clearance_end_date: datetime
+    status: ProductStatus = ProductStatus.active
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     inventories: list["Inventory"] = Relationship(back_populates="product")
-    priceHistories: list["PriceHistory"] = Relationship(back_populates="product")
+    price_histories: list["PriceHistory"] = Relationship(back_populates="product")
     sales: list["SalesDaily"] = Relationship(back_populates="product")
-    elasticityEstimate: "ElasticityEstimate" | None = Relationship(back_populates="product")
-    competitorPrices: list["CompetitorPrice"] = Relationship(back_populates="product")
-    markdownEvaluations: list["MarkdownEvaluation"] = Relationship(back_populates="product")
-    markdownActions: list["MarkdownActionLog"] = Relationship(back_populates="product")
+    elasticity_estimate: Optional["ElasticityEstimate"] | None = Relationship(back_populates="product")
+    competitor_prices: list["CompetitorPrice"] = Relationship(back_populates="product")
+    markdown_evaluations: list["MarkdownEvaluation"] = Relationship(back_populates="product")
+    markdown_actions: list["MarkdownActionLog"] = Relationship(back_populates="product")

@@ -1,15 +1,20 @@
+from typing import TYPE_CHECKING
+
 from sqlmodel import SQLModel, Field, Relationship
 from datetime import date
 from decimal import Decimal
+
+if TYPE_CHECKING:
+    from app.models import Product
 
 
 class SalesDaily(SQLModel, table=True):
     __tablename__ = "sales_daily"
 
-    productId: int = Field(primary_key=True, alias="product_id", foreign_key="products.product_id")
-    saleDate: date = Field(primary_key=True, alias="sale_date")
-    unitsSold: int = Field(alias="units_sold")
-    avgUnitPrice: Decimal = Field(alias="avg_unit_price")
-    promoFlag: bool = Field(default=False, alias="promo_flag")
+    product_id: int = Field(foreign_key="products.product_id", primary_key=True)
+    sale_date: date = Field(primary_key=True)
+    units_sold: int
+    avg_unit_price: Decimal
+    promo_flag: bool = False
 
     product: "Product" = Relationship(back_populates="sales")

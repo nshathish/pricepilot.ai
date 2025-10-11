@@ -1,16 +1,21 @@
+from typing import TYPE_CHECKING
+
 from sqlmodel import SQLModel, Field, Relationship
-from datetime import datetime
+from datetime import datetime, UTC
 from decimal import Decimal
+
+if TYPE_CHECKING:
+    from app.models import Product
 
 
 class ElasticityEstimate(SQLModel, table=True):
     __tablename__ = "elasticity_estimates"
 
-    productId: int = Field(primary_key=True, alias="product_id", foreign_key="products.product_id")
+    product_id: int = Field(foreign_key="products.product_id", primary_key=True)
     elasticity: Decimal
     method: str
-    sampleSize: int | None = Field(default=None, alias="sample_size")
+    sample_size: int | None = None
     confidence: Decimal | None = None
-    lastUpdated: datetime = Field(default_factory=datetime.utcnow, alias="last_updated")
+    last_updated: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
-    product: "Product" = Relationship(back_populates="elasticityEstimate")
+    product: "Product" = Relationship(back_populates="elasticity_estimate")

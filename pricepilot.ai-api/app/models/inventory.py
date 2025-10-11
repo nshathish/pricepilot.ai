@@ -1,12 +1,16 @@
+from typing import TYPE_CHECKING
+
 from sqlmodel import SQLModel, Field, Relationship
 
+if TYPE_CHECKING:
+    from app.models import Product
 
 class Inventory(SQLModel, table=True):
     __tablename__ = "inventory"
 
-    productId: int = Field(primary_key=True, alias="product_id")
+    product_id: int = Field(foreign_key="products.product_id", primary_key=True)
     location: str = Field(default="main", primary_key=True)
-    stockOnHand: int = Field(alias="stock_on_hand")
-    reserved: int = Field(default=0)
+    stock_on_hand: int
+    reserved: int = 0
 
     product: "Product" = Relationship(back_populates="inventories")

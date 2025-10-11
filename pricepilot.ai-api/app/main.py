@@ -4,6 +4,7 @@ from fastapi import FastAPI, Depends
 
 from app.core.config import Settings, get_settings
 from app.db.sessions import init_db
+from app.api.v1.endpoints import product
 
 
 @asynccontextmanager
@@ -16,6 +17,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.include_router(product.router, prefix="/api/v1/products", tags=["products"])
 
 
 @app.get("/")
