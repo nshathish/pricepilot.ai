@@ -1,0 +1,32 @@
+# Bytecode and cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+.venv/
+
+# Editor settings
+.vscode/
+.idea/
+
+# Environment variables
+.env
+.env.*
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Test and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Alembic migrations (version files only)
+migrations/versions/
+
+# MyPy and Pydantic cache
+.mypy_cache/
+.dmypy.json
+__pydantic__/
