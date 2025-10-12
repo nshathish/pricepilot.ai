@@ -2,8 +2,11 @@
 #    uv pip compile pyproject.toml
 annotated-types==0.7.0
     # via pydantic
+anthropic==0.69.0
+    # via pricepilot-ai-api (pyproject.toml)
 anyio==4.11.0
     # via
+    #   anthropic
     #   httpx
     #   starlette
     #   watchfiles
@@ -21,13 +24,17 @@ colorama==0.4.6
     # via
     #   click
     #   uvicorn
+distro==1.9.0
+    # via anthropic
 dnspython==2.8.0
     # via email-validator
+docstring-parser==0.17.0
+    # via anthropic
 email-validator==2.3.0
     # via
     #   fastapi
     #   pydantic
-fastapi==0.118.2
+fastapi==0.119.0
     # via pricepilot-ai-api (pyproject.toml)
 fastapi-cli==0.0.13
     # via fastapi
@@ -38,32 +45,56 @@ greenlet==3.2.4
 h11==0.16.0
     # via
     #   httpcore
+    #   hypercorn
     #   uvicorn
+    #   wsproto
+h2==4.3.0
+    # via hypercorn
+hpack==4.1.0
+    # via h2
 httpcore==1.0.9
     # via httpx
 httptools==0.7.1
     # via uvicorn
 httpx==0.28.1
     # via
+    #   pricepilot-ai-api (pyproject.toml)
+    #   anthropic
     #   fastapi
     #   fastapi-cloud-cli
-idna==3.10
+hypercorn==0.17.3
+    # via pricepilot-ai-api (pyproject.toml)
+hyperframe==6.1.0
+    # via h2
+idna==3.11
     # via
     #   anyio
     #   email-validator
     #   httpx
 jinja2==3.1.6
     # via fastapi
+jiter==0.11.0
+    # via anthropic
+joblib==1.5.2
+    # via scikit-learn
 markdown-it-py==4.0.0
     # via rich
 markupsafe==3.0.3
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
-psycopg2-binary==2.9.10
+numpy==2.3.3
+    # via
+    #   pricepilot-ai-api (pyproject.toml)
+    #   scikit-learn
+    #   scipy
+priority==2.0.0
+    # via hypercorn
+psycopg2-binary==2.9.11
     # via pricepilot-ai-api (pyproject.toml)
 pydantic==2.12.0
     # via
+    #   anthropic
     #   fastapi
     #   fastapi-cloud-cli
     #   pydantic-settings
@@ -92,24 +123,33 @@ rich-toolkit==0.15.1
     #   fastapi-cloud-cli
 rignore==0.7.0
     # via fastapi-cloud-cli
+scikit-learn==1.7.2
+    # via pricepilot-ai-api (pyproject.toml)
+scipy==1.16.2
+    # via scikit-learn
 sentry-sdk==2.41.0
     # via fastapi-cloud-cli
 shellingham==1.5.4
     # via typer
 sniffio==1.3.1
-    # via anyio
-sqlalchemy==2.0.43
+    # via
+    #   anthropic
+    #   anyio
+sqlalchemy==2.0.44
     # via sqlmodel
 sqlmodel==0.0.27
     # via pricepilot-ai-api (pyproject.toml)
 starlette==0.48.0
     # via fastapi
+threadpoolctl==3.6.0
+    # via scikit-learn
 typer==0.19.2
     # via
     #   fastapi-cli
     #   fastapi-cloud-cli
 typing-extensions==4.15.0
     # via
+    #   anthropic
     #   fastapi
     #   pydantic
     #   pydantic-core
@@ -132,3 +172,5 @@ watchfiles==1.1.0
     # via uvicorn
 websockets==15.0.1
     # via uvicorn
+wsproto==1.2.0
+    # via hypercorn
