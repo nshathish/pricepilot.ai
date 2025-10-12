@@ -8,6 +8,7 @@ dependencies = [
     "anthropic>=0.69.0",
     "fastapi[standard]>=0.118.2",
     "httpx>=0.28.1",
+    "hypercorn>=0.17.3",
     "numpy>=2.3.3",
     "psycopg2-binary>=2.9.10",
     "pydantic-settings>=2.11.0",
