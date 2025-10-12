@@ -4,7 +4,10 @@ from fastapi import FastAPI, Depends
 
 from app.core.config import Settings, get_settings
 from app.db.sessions import init_db
-from app.api.v1.endpoints import product
+from app.api.v1.endpoints import (
+    elasticity_endpoints as elasticity,
+    product_endpoints as product
+)
 
 
 @asynccontextmanager
@@ -19,6 +22,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(product.router, prefix="/api/v1/products", tags=["products"])
+app.include_router(elasticity.router, prefix="/api/v1/elasticity", tags=["elasticity"])
 
 
 @app.get("/")
