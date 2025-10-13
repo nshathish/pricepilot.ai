@@ -1,58 +1,55 @@
 # Prompt template as a module-level constant
-CLEARANCE_ANALYSIS_PROMPT = """Analyze these products for clearance optimization. Current date: {current_date}
+CLEARANCE_ANALYSIS_PROMPT = """
+    You are a retail markdown optimization agent.
 
-Products:
-{product_data}
+    Current Date: {current_date}
+    Analysis Timestamp: {analysis_date}
+    
+    Your task is to identify products that would benefit most from a flash sale campaign to maximize profit and reduce overstock.
+    
+    Dataset contains {total_products} products. Each product includes metrics on pricing, inventory, sales performance, markdown history, and risk flags.
+    
+    PRODUCT DATA (JSON):
+    {product_data}
+    
+    SUMMARY STATISTICS:
+    {summary_statistics}
+    
+    KEY METRICS:
+    - Pricing: current_price, base_price, unit_cost, current_margin, margin_percentage
+    - Inventory: stock_on_hand, available_stock, days_of_inventory
+    - Sales: total_units_sold_30d, avg_daily_units, stock_turnover_ratio
+    - Trend: units_last_15_days vs units_prev_15_days, sales_trend_pct
+    - Markdown: current_markdown_pct
+    - Risk: approaching_clearance, zero_sales_flag, overstocked_flag
+    - Discount headroom: max_discount_pct_suggested
+    
+    Please provide:
+    
+    1. **FLASH SALE CANDIDATES**
+       - Which products should be included?
+       - Why are they strong candidates?
+    
+    2. **RANKED RECOMMENDATIONS**
+       - Rank all products by flash sale priority
+       - Include: product_id, sku, product_name, reason
+    
+    3. **DISCOUNT STRATEGY**
+       - Suggested markdown % (≤ max_discount_pct_suggested)
+       - Expected impact on sales velocity and profit
+       - Tradeoff analysis
+    
+    4. **URGENCY ASSESSMENT**
+       - Immediate vs delayed action
+       - Risk analysis (clearance, overstock)
+    
+    5. **CATEGORY INSIGHTS**
+       - Patterns, bundling opportunities
+    
+    6. **CAMPAIGN PLAN**
+       - Duration, timing, expected profit uplift
+       - Success metrics
+    
+    Return your analysis in structured markdown or bullet format. Be specific with numbers and reasoning.        
 
-For each product, analyze:
-1. Urgency level based on days_left and days_of_inventory
-2. Optimal discount percentage to clear inventory while maximizing profit
-3. Projected sell-through percentage after discount
-4. Clear reasoning for the recommendation
-
-Classify as:
-- URGENT: Less than 10 days of inventory OR less than 7 days until deadline
-- MODERATE: 10-30 days of inventory OR 7-20 days until deadline
-- ON_TRACK: More than 30 days of inventory AND sufficient time to sell naturally
-
-Rules:
-- Never recommend discounts over 50%
-- Higher urgency = more aggressive discounts
-- Consider sales velocity when calculating optimal discount
-- Fast-moving items need smaller discounts
-- Slow-moving items need larger discounts
-
-Respond with ONLY valid JSON in this exact format:
-{{
-  "analysisDate": "{analysis_date}",
-  "totalProducts": {total_products},
-  "clearanceCandidates": [
-    {{
-      "productId": "string",
-      "productName": "string",
-      "status": "URGENT|MODERATE|ON_TRACK",
-      "currentMetrics": {{
-        "stock": 0,
-        "daysLeft": 0,
-        "currentPrice": 0.00,
-        "basePrice": 0.00,
-        "salesRate": 0.0,
-        "daysOfInventory": 0.0
-      }},
-      "recommendation": {{
-        "discountPercent": 0,
-        "newPrice": 0.00,
-        "projectedSellThrough": "0%",
-        "estimatedRevenue": 0.00,
-        "reasoning": "Brief explanation"
-      }}
-    }}
-  ],
-  "summary": {{
-    "urgent": 0,
-    "moderate": 0,
-    "onTrack": 0
-  }}
-}}
-
-IMPORTANT: Your entire response must be valid JSON only. Do not include any explanatory text outside the JSON structure."""
+"""

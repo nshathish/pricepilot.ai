@@ -37,7 +37,7 @@ class Product(SQLModel, table=True):
     unit_cost: Decimal
     base_price: Decimal
     current_price: Decimal
-    holding_cost_per_unit_per_day: Decimal = 0
+    holding_cost_per_unit_per_day: Decimal = Field(default=Decimal('0'))
     clearance_end_date: datetime
     status: ProductStatus = ProductStatus.active
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

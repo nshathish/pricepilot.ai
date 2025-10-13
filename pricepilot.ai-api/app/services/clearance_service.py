@@ -1,34 +1,29 @@
 import json
-import os
+import pandas as pd
 
 from anthropic import AsyncAnthropic
-from typing import Dict, Any, Sequence
+from typing import Dict, Any, Sequence, Coroutine
 from datetime import datetime
+
+from anthropic.types import MessageParam
 
 from app.prompts import CLEARANCE_ANALYSIS_PROMPT
 
 
-async def analyze_clearance_products(products: Sequence[Any]) -> Dict[str, Any]:
+async def analyze_clearance_products(product_data: Sequence[Any], api_key: str) -> str:
     """
     Use Claude AI to analyze products and recommend clearance strategies
     """
 
-    # Format products for analysis
-    product_data = [
-        {
-            "id": str(p.id),
-            "name": p.name,
-            "sku": getattr(p, 'sku', 'N/A'),
-            "category": getattr(p, 'category', 'N/A'),
-            "stock": p.stock,
-            "days_left": p.days_left,
-            "current_price": float(p.current_price),
-            "base_price": float(getattr(p, 'base_price', p.current_price)),
-            "sales_rate": float(p.sales_rate),
-            "days_of_inventory": round(p.stock / p.sales_rate, 1) if p.sales_rate > 0 else 999
-        }
-        for p in products
-    ]
+    # Convert RowMapping objects to plain dictionaries
+    products_list = [dict(row) for row in product_data]
+
+    # Convert to DataFrame for statistics
+    df = pd.DataFrame(products_list)
+
+    # Prepare summary statistics
+    summary_stats = df[['current_price', 'current_margin', 'margin_percentage', 'stock_on_hand',
+                        'total_units_sold_30d', 'avg_daily_units', 'days_of_inventory']].describe().to_string()
 
     # Format the prompt with current data
     current_date = datetime.now().strftime('%Y-%m-%d')
@@ -36,25 +31,22 @@ async def analyze_clearance_products(products: Sequence[Any]) -> Dict[str, Any]:
 
     prompt = CLEARANCE_ANALYSIS_PROMPT.format(
         current_date=current_date,
-        product_data=json.dumps(product_data, indent=2),
+        product_data=json.dumps(products_list, indent=2, default=str),
+        summary_statistics=summary_stats,
         analysis_date=analysis_date,
-        total_products=len(product_data)
+        total_products=len(products_list)
     )
 
     try:
         # Initialize Anthropic client
-        client = AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+        client = AsyncAnthropic(api_key=api_key)
 
         # Call Claude API
+        messages: list[MessageParam] = [{"role": "user", "content": prompt}]
         message = await client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=4000,
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
+            messages=messages
         )
 
         # Extract the text response
@@ -62,12 +54,14 @@ async def analyze_clearance_products(products: Sequence[Any]) -> Dict[str, Any]:
 
         # Clean up the response (remove potential mark down code blocks)
         response_text = response_text.strip()
-        response_text = response_text.replace('```json\n', '').replace('```\n', '').replace('```', '').strip()
+        # response_text = response_text.replace('```json\n', '').replace('```\n', '').replace('```', '').strip()
 
         # Parse JSON response
-        analysis_result = json.loads(response_text)
+        # analysis_result = json.loads(response_text)
 
-        return analysis_result
+        print("AI Response:", response_text)  # Debugging line
+
+        return response_text
 
     except json.JSONDecodeError as e:
         raise ValueError(f"Failed to parse AI response as JSON: {str(e)}")
