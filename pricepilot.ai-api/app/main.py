@@ -22,12 +22,17 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+origins = [
+    "http://localhost:3000",
+    "https://pricepilotai-production.up.railway.app"
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=get_settings().cors_origins,  # Accept requests from these origins
+    allow_origins=origins,      # Accept requests from these origins
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],        # Allow all HTTP methods
+    allow_headers=["*"],        # Allow all headers
 )
 
 app.include_router(product.router, prefix="/api/v1/products", tags=["products"])
