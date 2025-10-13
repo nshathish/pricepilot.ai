@@ -24,32 +24,58 @@ CLEARANCE_ANALYSIS_PROMPT = """
     - Risk: approaching_clearance, zero_sales_flag, overstocked_flag
     - Discount headroom: max_discount_pct_suggested
     
-    Please provide:
+    Analyze each product and return a JSON response with the following structure:
+          
+    {{
+      "summary": {{
+        "total_products_analyzed": <number>,
+        "products_requiring_action": <number>,
+        "total_potential_revenue_impact": <number>,
+        "analysis_timestamp": "{analysis_date}"
+      }},
+      "clearance_candidates": [
+        {{
+          "product_id": <number>,
+          "sku": "<string>",
+          "product_name": "<string>",
+          "category": "<string>",
+          "status": "URGENT" | "MODERATE" | "ON TRACK",
+          "stock": <number>,
+          "days_left": <number>,
+          "current_price": <number>,
+          "base_price": <number>,
+          "sales_rate": <number>,
+          "projected_sell_percentage": <number>,
+          "ai_recommendation": {{
+            "action": "discount" | "no_action",
+            "discount_percentage": <number>,
+            "new_price": <number>,
+            "reasoning": "<string>"
+          }},
+          "urgency_score": <number 1-100>,
+          "risk_factors": [<list of risk factor strings>]
+        }}
+      ],
+      "insights": {{
+        "top_priorities": [<list of product_ids that need immediate attention>],
+        "category_analysis": "<string with category insights>",
+        "campaign_recommendation": {{
+          "duration_days": <number>,
+          "expected_profit_uplift": <number>,
+          "success_metrics": [<list of metrics to track>]
+        }}
+      }}
+    }}
     
-    1. **FLASH SALE CANDIDATES**
-       - Which products should be included?
-       - Why are they strong candidates?
-    
-    2. **RANKED RECOMMENDATIONS**
-       - Rank all products by flash sale priority
-       - Include: product_id, sku, product_name, reason
-    
-    3. **DISCOUNT STRATEGY**
-       - Suggested markdown % (≤ max_discount_pct_suggested)
-       - Expected impact on sales velocity and profit
-       - Tradeoff analysis
-    
-    4. **URGENCY ASSESSMENT**
-       - Immediate vs delayed action
-       - Risk analysis (clearance, overstock)
-    
-    5. **CATEGORY INSIGHTS**
-       - Patterns, bundling opportunities
-    
-    6. **CAMPAIGN PLAN**
-       - Duration, timing, expected profit uplift
-       - Success metrics
-    
-    Return your analysis in structured markdown or bullet format. Be specific with numbers and reasoning.        
-
+    CRITICAL INSTRUCTIONS:
+    1. Status must be one of: "URGENT" (5-10 days left), "MODERATE" (11-30 days left), or "ON TRACK" (>30 days or selling well)
+    2. For products with "ON TRACK" status, set discount_percentage to 0 and action to "no_action"
+    3. projected_sell_percentage should be 0-100 (e.g., 57 means 57% likelihood of selling out)
+    4. discount_percentage should never exceed max_discount_pct_suggested for that product
+    5. Calculate new_price as: current_price * (1 - discount_percentage/100)
+    6. urgency_score should be 1-100, with 100 being most urgent
+    7. Include ALL products from the input data in clearance_candidates array
+    8. risk_factors should include relevant flags like "approaching_clearance", "zero_sales_flag", "overstocked_flag", "slow_moving", etc.
+    9. Respond ONLY with valid JSON. Do not include markdown code blocks or any text outside the JSON structure.
+    10. Ensure all numeric values are numbers, not strings.
 """
