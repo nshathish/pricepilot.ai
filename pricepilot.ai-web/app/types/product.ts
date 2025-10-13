@@ -1,4 +1,4 @@
-export type UrgencyLevel = 'critical' | 'moderate' | 'low';
+export type UrgencyLevel = 'URGENT' | 'MODERATE' | 'ON TRACK';
 
 export interface Product {
   id: number;

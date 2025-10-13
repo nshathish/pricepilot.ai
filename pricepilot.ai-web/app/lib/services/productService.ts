@@ -4,7 +4,7 @@ import {
   calculateSalesRate,
 } from '@/app/lib/utils/calculations';
 
-import type { Product } from '@/app/types/product';
+import type { Product, UrgencyLevel } from '@/app/types/product';
 
 export async function getProductsForDisplay(): Promise<Product[]> {
   const products = await getAllProducts();
@@ -45,15 +45,15 @@ function determineUrgency(
   daysToClearing: number,
   stock: number,
   salesRate: number,
-): 'critical' | 'moderate' | 'low' {
+): UrgencyLevel {
   const projectedUnitsToSell = salesRate * daysToClearing;
 
   if (daysToClearing <= 7 || projectedUnitsToSell < stock * 0.5) {
-    return 'critical';
+    return 'URGENT';
   } else if (daysToClearing <= 20 || projectedUnitsToSell < stock * 0.8) {
-    return 'moderate';
+    return 'MODERATE';
   }
-  return 'low';
+  return 'ON TRACK';
 }
 
 function calculateProjectedSellThrough(

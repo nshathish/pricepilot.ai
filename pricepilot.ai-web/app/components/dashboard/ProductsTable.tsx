@@ -2,10 +2,10 @@ import { Package } from 'lucide-react';
 
 import ProductRow from '@/app/components/dashboard/ProductsRow';
 
-import type { Product } from '@/app/types/product';
+import type { ClearanceCandidate } from '@/app/types/clearance';
 
 interface ProductsTableProps {
-  products: Product[];
+  products: ClearanceCandidate[];
 }
 
 export default function ProductsTable({ products }: ProductsTableProps) {
@@ -49,9 +49,20 @@ export default function ProductsTable({ products }: ProductsTableProps) {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200">
-            {products.map((product) => (
-              <ProductRow key={product.id} product={product} />
-            ))}
+            {products.length > 0 ? (
+              products.map((product) => (
+                <ProductRow key={product.product_id} product={product} />
+              ))
+            ) : (
+              <tr>
+                <td colSpan={8} className="px-6 py-12 text-center">
+                  <Package className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                  <p className="text-slate-600">
+                    No clearance candidates found
+                  </p>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

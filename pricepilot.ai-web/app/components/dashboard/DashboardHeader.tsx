@@ -1,11 +1,13 @@
 interface DashboardHeaderProps {
   totalProducts: number;
   productsRequiringAction: number;
+  potentialRevenue: number;
 }
 
 export default function DashboardHeader({
   totalProducts,
   productsRequiringAction,
+  potentialRevenue,
 }: DashboardHeaderProps) {
   return (
     <div className="mb-8">
@@ -19,7 +21,7 @@ export default function DashboardHeader({
               AI-powered clearance optimization for maximum profit
             </p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             <div className="text-right">
               <p className="text-sm text-slate-500">Total Products Monitored</p>
               <p className="text-2xl font-bold text-slate-900">
@@ -30,6 +32,16 @@ export default function DashboardHeader({
               <p className="text-sm text-slate-500">Requiring Action</p>
               <p className="text-2xl font-bold text-orange-600">
                 {productsRequiringAction}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-slate-500">Potential Impact</p>
+              <p className="text-2xl font-bold text-green-600">
+                $
+                {potentialRevenue.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </p>
             </div>
           </div>
