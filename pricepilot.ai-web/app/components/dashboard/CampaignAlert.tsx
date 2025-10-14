@@ -16,12 +16,10 @@ export default function CampaignAlert({
           <AlertCircle className="w-6 h-6 text-orange-600 mt-0.5 flex-shrink-0" />
           <div>
             <p className="font-semibold text-orange-900 text-lg mb-1">
-              Ready to Optimize Clearance
+            📊 Ready to Review Detailed Analysis?
             </p>
             <p className="text-sm text-orange-700">
-              {productsRequiringAction} products have been analyzed and are
-              ready for AI-optimized markdown pricing. Launch the campaign to
-              automatically apply recommended discounts.
+                Get comprehensive AI insights including flash sale strategy, marketing channel recommendations, category-specific analysis, and expected profit impact.
             </p>
           </div>
         </div>
@@ -30,7 +28,7 @@ export default function CampaignAlert({
           className="flex-shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl"
         >
           <Zap className="w-5 h-5" />
-          View Analysis
+        🔍 Generate Detailed Analysis
         </button>
       </div>
     </div>
