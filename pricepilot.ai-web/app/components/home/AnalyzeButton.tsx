@@ -94,7 +94,7 @@ export default function AnalyzeButton({
           ) : (
             <>
               <Sparkles className="w-5 h-5" />
-              Analyze & Identify Clearance Products
+              Analyze Clearance Products
             </>
           )}
         </button>
