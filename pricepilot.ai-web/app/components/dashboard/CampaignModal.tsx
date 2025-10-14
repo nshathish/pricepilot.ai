@@ -235,7 +235,7 @@ export default function CampaignModal({
         </div>
       </div>
     </div>
-        {/* Footer Actions 
+        {/* Footer Actions */}
         <div className="sticky bottom-0 bg-white border-t border-slate-200 p-6">
           <div className="flex gap-3">
             <button
@@ -254,6 +254,6 @@ export default function CampaignModal({
           </div>
         </div>
       </div>
-    </div>*/}
+    </div>
   );
 }
