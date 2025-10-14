@@ -112,39 +112,68 @@ export default function CampaignModal({
 
         {/* Navigation */}
         <div className="px-6 py-4 bg-blue-50 border-b border-blue-100">
-          <div className="flex flex-wrap gap-2">
-            <span className="text-sm font-semibold text-gray-700 mr-2">
-              Jump to Section:
-            </span>
-            {[
-              'overview',
-              ...insights.products.map((p) =>
-                p.name.toLowerCase().replace(' ', '-'),
-              ),
-              'campaign-plan',
-              'success-metrics',
-            ].map((section) => (
-              <button
-                key={section}
-                onClick={() => scrollToSection(section)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  activeSection === section
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-blue-600 hover:bg-blue-100 border border-blue-200'
-                }`}
-              >
-                {section === 'overview'
-                  ? '📊 Overview'
-                  : section === 'campaign-plan'
-                    ? '🎯 Campaign Plan'
-                    : section === 'success-metrics'
-                      ? '📈 Success Metrics'
-                      : insights.products.find(
-                          (p) =>
-                            p.name.toLowerCase().replace(' ', '-') === section,
-                        )?.name || section}
-              </button>
-            ))}
+          <p className="text-sm font-semibold text-gray-700 mb-3">
+            Jump to Section:
+          </p>
+          <div className="grid grid-cols-3 gap-3">
+            <button
+              onClick={() => scrollToSection('overview')}
+              className={`px-4 py-3 rounded-lg text-sm font-medium transition-all text-left ${
+                activeSection === 'overview'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-white text-gray-700 hover:bg-blue-50 border border-gray-200'
+              }`}
+            >
+              <span className="mr-2">📊</span> Overview
+            </button>
+
+            {insights.products.map((product) => {
+              const sectionId = product.name.toLowerCase().replace(' ', '-');
+              const icon =
+                product.category === 'Accessories'
+                  ? '🧢'
+                  : product.category === 'Apparel'
+                    ? '👕'
+                    : product.category === 'Footwear'
+                      ? '👟'
+                      : '📦';
+
+              return (
+                <button
+                  key={product.product_id}
+                  onClick={() => scrollToSection(sectionId)}
+                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-all text-left ${
+                    activeSection === sectionId
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-white text-gray-700 hover:bg-blue-50 border border-gray-200'
+                  }`}
+                >
+                  <span className="mr-2">{icon}</span> {product.name}
+                </button>
+              );
+            })}
+
+            <button
+              onClick={() => scrollToSection('campaign-plan')}
+              className={`px-4 py-3 rounded-lg text-sm font-medium transition-all text-left ${
+                activeSection === 'campaign-plan'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-white text-gray-700 hover:bg-blue-50 border border-gray-200'
+              }`}
+            >
+              <span className="mr-2">🎯</span> Campaign Plan
+            </button>
+
+            <button
+              onClick={() => scrollToSection('success-metrics')}
+              className={`px-4 py-3 rounded-lg text-sm font-medium transition-all text-left ${
+                activeSection === 'success-metrics'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-white text-gray-700 hover:bg-blue-50 border border-gray-200'
+              }`}
+            >
+              <span className="mr-2">📈</span> Success Metrics
+            </button>
           </div>
         </div>
 
