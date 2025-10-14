@@ -98,7 +98,7 @@ class AnalysisSummary(BaseModel):
     )
 
 
-class ClearanceAnalysisResponse(BaseModel):
+class ClearanceProductsResponse(BaseModel):
     """Complete clearance analysis response from AI"""
     summary: AnalysisSummary = Field(
         description="Summary of the analysis"

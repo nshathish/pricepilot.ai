@@ -18,44 +18,174 @@ VIEW_CLEARANCE_DETAILED_ANALYSIS_PROMPT = """
     - Risk: approaching_clearance, zero_sales_flag, overstocked_flag
     - Discount headroom: max_discount_pct_suggested
     
-    Please provide:
+    CRITICAL PROFIT CALCULATION FORMULA (MUST USE EXACT SAME FORMULA AS DASHBOARD):
+
+    Step 1: For each product requiring discount:
+      - new_price = current_price × (1 - discount_percentage / 100)
+      - net_profit_per_unit = new_price - unit_cost
+      - expected_units_to_sell = sales_rate × velocity_multiplier × campaign_days
+      - product_profit_impact = net_profit_per_unit × expected_units_to_sell
     
+    Step 2: Sum all product_profit_impact values:
+      - expected_profit_impact = sum of all product_profit_impact
+    
+    Velocity Multiplier Guidelines:
+    - 20-30% discount → 1.5-2x velocity
+    - 35-40% discount → 2-3x velocity  
+    - 45-50% discount → 3-4x velocity
+    
+    Campaign Days Guidelines:
+    - URGENT products (≤10 days left): 5-7 day campaign
+    - MODERATE products (11-30 days left): 7-10 day campaign
+    - Products with high urgency get shorter, more aggressive campaigns
+    
+    EXAMPLE (MUST MATCH THIS CALCULATION):
+    Product: Beanie Hat
+    - current_price: $12.00
+    - unit_cost: $4.50
+    - sales_rate: 11.9 units/day
+    - Recommended discount: 45%
+    
+    Calculation:
+    - new_price = $12.00 × (1 - 0.45) = $6.60
+    - net_profit_per_unit = $6.60 - $4.50 = $2.10
+    - velocity_multiplier = 3.5x (middle of 3-4x range)
+    - campaign_days = 5 (urgent product)
+    - expected_units_to_sell = 11.9 × 3.5 × 5 = 208 units
+    - product_profit_impact = $2.10 × 208 = $436.80
+    
+    If you have 3 products, sum their individual profit impacts to get total expected_profit_impact.
+    
+    CRITICAL: You MUST respond with ONLY valid JSON in the exact structure specified below. Do not include any text, explanation, or markdown formatting outside the JSON object.
+    
+    Required JSON Structure:
+    {{
+      "executive_summary": {{
+        "urgent_action_count": <number>,
+        "urgent_products": [<array of product names with urgency info>],
+        "moderate_priority_count": <number>,
+        "moderate_products": [<array of product names>],
+        "expected_profit_impact": <number>
+      }},
+      "navigation_sections": [<array of section names for UI navigation>],
+      "products": [
+        {{
+          "product_id": <number>,
+          "sku": "<string>",
+          "name": "<string>",
+          "category": "<string>",
+          "current_price": <number>,
+          "stock_units": <number>,
+          "sales_rate": <number>,
+          "natural_sellthrough": <number>,
+          "days_until_clearance": <number>,
+          "urgency_level": "URGENT|MODERATE|LOW",
+          "recommended_action": {{
+            "discount_percentage": <number>,
+            "new_price": <number>,
+            "expected_velocity_boost": "<string>",
+            "target_units_sold": <number>,
+            "rationale": "<string>",
+            "marketing_priority": "<string>",
+            "risk_if_no_action": "<string or null>"
+          }}
+        }}
+      ],
+      "campaign_plan": {{
+        "duration_days": <number>,
+        "expected_uplift": <number>,
+        "total_discount": <number>,
+        "phases": [
+          {{
+            "phase": <number>,
+            "name": "<string>",
+            "products": [<array of product names>],
+            "duration": "<string>"
+          }}
+        ]
+      }},
+      "marketing_channels": [
+        {{
+          "channel": "<string>",
+          "priority": "High Priority|Medium Priority|Low Priority",
+          "why": "<string>",
+          "reach": "<string>",
+          "conversion": "<string>",
+          "budget": "<string>",
+          "timing": "<string>",
+          "products": [<array of product names>]
+        }}
+      ],
+      "success_metrics": {{
+        "inventory_reduction_target": "<string>",
+        "sales_velocity_increase": "<string>",
+        "margin_preservation": "<string>",
+        "customer_acquisition": "<string>"
+      }}
+    }}
+    
+    Analysis Requirements:
+
     1. **FLASH SALE CANDIDATES**
-       - Which products should be included?
-       - Why are they strong candidates?
+       - Identify products for inclusion based on urgency, overstock risk, and profit potential
+       - Classify by urgency_level: URGENT (≤10 days), MODERATE (11-30 days), or LOW (>30 days)
+       - Only include products requiring action in the products array
     
     2. **RANKED RECOMMENDATIONS**
-       - Rank all products by flash sale priority
-       - Include: product_id, sku, product_name, reason
+       - Include only products where discount is recommended
+       - Sort by urgency_level (URGENT first, then MODERATE, then LOW)
     
     3. **DISCOUNT STRATEGY**
-       - Suggested markdown % (≤ max_discount_pct_suggested)
-       - Expected impact on sales velocity and profit
-       - Tradeoff analysis
+       - discount_percentage must be ≤ max_discount_pct_suggested
+       - Calculate new_price as: current_price × (1 - discount_percentage/100)
+       - Round new_price to 2 decimal places
+       - expected_velocity_boost must match velocity_multiplier (e.g., "3-4x velocity boost" if multiplier is 3.5)
+       - target_units_sold = sales_rate × velocity_multiplier × campaign_days (MUST use this formula)
+       - Include calculation_details with all intermediate values
+       - Explain rationale (why this discount level)
+       - Specify marketing_priority
     
     4. **URGENCY ASSESSMENT**
-       - Immediate vs delayed action
-       - Risk analysis (clearance, overstock)
+       - Set urgency_level based on days_until_clearance
+       - For URGENT items, populate risk_if_no_action with specific consequences
+       - For MODERATE/LOW items, risk_if_no_action can be null
     
-    5. **CATEGORY INSIGHTS**
-       - Patterns, bundling opportunities
+    5. **CAMPAIGN PLAN**
+       - Create 3-4 phases with specific products and durations
+       - expected_uplift = sum of all profit_impact from calculation_details (MUST match expected_profit_impact in executive_summary)
+       - total_discount = sum of (current_price - new_price) × target_units_sold for all products
+       - duration_days = maximum campaign_days across all products
     
-    6. **CAMPAIGN PLAN**
-       - Duration, timing, expected profit uplift
-       - Success metrics
-       - **Marketing Channels**: Recommend specific channels for this campaign based on product categories, urgency, and target audience. Consider:
-         * Email marketing (best for loyal customers, time-sensitive deals)
-         * Instagram/Social media posts (visual products, lifestyle items, younger demographics)
-         * SMS/Push notifications (high urgency, existing app users)
-         * Website banners (broad reach, all visitors)
-         * Paid ads (Facebook/Google) (customer acquisition, specific targeting)
-         * In-store signage (physical locations, impulse purchases)
-       - For each recommended channel, explain:
-         * Why it's suitable for these specific products
-         * Expected reach and conversion rate
-         * Budget considerations (high/medium/low cost)
-         * Timing recommendations (immediate launch vs scheduled)
-
+    6. **MARKETING CHANNELS**
+       - Recommend 4-6 specific channels
+       - Must include: Email Marketing, Instagram/Social Media, SMS/Push Notifications, Website Banners
+       - For each channel provide: priority, why, reach, conversion, budget, timing, products array
     
-    Return your analysis in structured markdown or bullet format. Be specific with numbers and reasoning.
+    7. **SUCCESS METRICS**
+       - Define clear, measurable targets
+    
+    8. **PROFIT CALCULATIONS (CRITICAL)**
+       - For EACH product in products array:
+         * Calculate net_profit_per_unit = new_price - unit_cost
+         * Choose velocity_multiplier from guidelines based on discount_percentage
+         * Choose campaign_days from guidelines based on urgency_level
+         * Calculate target_units_sold = sales_rate × velocity_multiplier × campaign_days
+         * Calculate profit_impact = net_profit_per_unit × target_units_sold
+         * Store ALL these values in calculation_details
+       - expected_profit_impact in executive_summary = sum of all profit_impact values
+       - expected_uplift in campaign_plan = same as expected_profit_impact (MUST MATCH EXACTLY)
+    
+    9. **NAVIGATION SECTIONS**
+       - Include: "Overview", each product name, "Campaign Plan", "Success Metrics"
+    
+    IMPORTANT: 
+    - Respond with ONLY the JSON object
+    - Do NOT include markdown code blocks (no ```json)
+    - Do NOT include any explanatory text before or after the JSON
+    - Ensure all JSON is valid and properly formatted
+    - All numeric values should be numbers, not strings
+    - Round all currency to 2 decimal places
+    - Use the EXACT same formulas as the dashboard prompt
+    - Include calculation_details in EVERY product to show your work
+    - expected_profit_impact and expected_uplift MUST be calculated the same way and MUST match
 """
