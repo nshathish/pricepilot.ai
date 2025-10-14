@@ -1,7 +1,7 @@
 import { ClearanceAnalysisResponse } from '@/app/types/clearance';
+import { CampaignAnalysis } from '@/app/types/campaign';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
 
 export async function findClearanceProducts(): Promise<ClearanceAnalysisResponse> {
   const response = await fetch(`${API_BASE_URL}/clearance/products`, {
@@ -22,7 +22,7 @@ export async function findClearanceProducts(): Promise<ClearanceAnalysisResponse
   return response.json();
 }
 
-export async function viewClearanceAnalysis(): Promise<string> {
+export async function viewClearanceAnalysis(): Promise<CampaignAnalysis> {
   const response = await fetch(`${API_BASE_URL}/clearance/analysis`, {
     method: 'GET',
     headers: {
@@ -38,5 +38,6 @@ export async function viewClearanceAnalysis(): Promise<string> {
     throw new Error(error.detail || `HTTP error! status: ${response.status}`);
   }
 
-  return response.text();
+  const textData = await response.text();
+  return JSON.parse(textData);
 }

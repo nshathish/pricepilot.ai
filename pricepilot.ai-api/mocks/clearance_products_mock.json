@@ -1,0 +1,168 @@
+{
+  "summary": {
+    "total_products_analyzed": 6,
+    "products_requiring_action": 4,
+    "total_potential_revenue_impact": 15420.0,
+    "analysis_timestamp": "2025-10-14T16:42:37.727478"
+  },
+  "clearance_candidates": [
+    {
+      "product_id": 12,
+      "sku": "BEAN-HAT-004",
+      "product_name": "Beanie Hat",
+      "category": "Accessories",
+      "status": "URGENT",
+      "stock": 400,
+      "days_left": 6,
+      "current_price": 12.0,
+      "base_price": 12.0,
+      "sales_rate": 11.86,
+      "projected_sell_percentage": 18.0,
+      "ai_recommendation": {
+        "action": "discount",
+        "discount_percentage": 35.0,
+        "new_price": 7.8,
+        "reasoning": "Approaching clearance deadline with high stock and declining sales trend. Deep discount needed to move inventory before clearance end."
+      },
+      "urgency_score": 95,
+      "risk_factors": [
+        "approaching_clearance",
+        "high_inventory",
+        "declining_sales"
+      ]
+    },
+    {
+      "product_id": 10,
+      "sku": "SUM-TOP-002",
+      "product_name": "Summer Top",
+      "category": "Apparel",
+      "status": "MODERATE",
+      "stock": 260,
+      "days_left": 16,
+      "current_price": 35.0,
+      "base_price": 35.0,
+      "sales_rate": 9.57,
+      "projected_sell_percentage": 35.0,
+      "ai_recommendation": {
+        "action": "discount",
+        "discount_percentage": 30.0,
+        "new_price": 24.5,
+        "reasoning": "Seasonal item approaching clearance with moderate inventory levels. Discount will help clear summer inventory before end of season."
+      },
+      "urgency_score": 75,
+      "risk_factors": [
+        "approaching_clearance",
+        "seasonal_item",
+        "moderate_inventory"
+      ]
+    },
+    {
+      "product_id": 9,
+      "sku": "WIN-JKT-001",
+      "product_name": "Winter Jacket",
+      "category": "Apparel",
+      "status": "ON TRACK",
+      "stock": 120,
+      "days_left": 78,
+      "current_price": 90.0,
+      "base_price": 90.0,
+      "sales_rate": 7.18,
+      "projected_sell_percentage": 85.0,
+      "ai_recommendation": {
+        "action": "no_action",
+        "discount_percentage": 0.0,
+        "new_price": 90.0,
+        "reasoning": "Strong seasonal timing for winter jacket with good turnover ratio and sufficient time to clearance deadline."
+      },
+      "urgency_score": 25,
+      "risk_factors": [
+        "declining_sales"
+      ]
+    },
+    {
+      "product_id": 11,
+      "sku": "RUN-SHOE-003",
+      "product_name": "Running Shoes",
+      "category": "Footwear",
+      "status": "MODERATE",
+      "stock": 80,
+      "days_left": 47,
+      "current_price": 100.0,
+      "base_price": 100.0,
+      "sales_rate": 4.79,
+      "projected_sell_percentage": 60.0,
+      "ai_recommendation": {
+        "action": "discount",
+        "discount_percentage": 25.0,
+        "new_price": 75.0,
+        "reasoning": "Moderate inventory with declining sales trend. Strategic discount to boost velocity and ensure clearance before deadline."
+      },
+      "urgency_score": 60,
+      "risk_factors": [
+        "declining_sales",
+        "slow_moving"
+      ]
+    },
+    {
+      "product_id": 14,
+      "sku": "SPORT-CAP-006",
+      "product_name": "Sport Cap",
+      "category": "Accessories",
+      "status": "ON TRACK",
+      "stock": 40,
+      "days_left": 136,
+      "current_price": 15.0,
+      "base_price": 15.0,
+      "sales_rate": 13.61,
+      "projected_sell_percentage": 95.0,
+      "ai_recommendation": {
+        "action": "no_action",
+        "discount_percentage": 0.0,
+        "new_price": 15.0,
+        "reasoning": "Excellent turnover ratio and low inventory with strong sales velocity. No discount needed as product is performing well."
+      },
+      "urgency_score": 10,
+      "risk_factors": []
+    },
+    {
+      "product_id": 13,
+      "sku": "TECH-HOOD-005",
+      "product_name": "Tech Hoodie",
+      "category": "Apparel",
+      "status": "ON TRACK",
+      "stock": 30,
+      "days_left": 168,
+      "current_price": 65.0,
+      "base_price": 65.0,
+      "sales_rate": 11.04,
+      "projected_sell_percentage": 90.0,
+      "ai_recommendation": {
+        "action": "no_action",
+        "discount_percentage": 0.0,
+        "new_price": 65.0,
+        "reasoning": "Strong sales velocity with very low inventory levels. Product is selling well at current price with excellent turnover."
+      },
+      "urgency_score": 15,
+      "risk_factors": [
+        "declining_sales"
+      ]
+    }
+  ],
+  "insights": {
+    "top_priorities": [
+      12,
+      10,
+      11
+    ],
+    "category_analysis": "Accessories category shows mixed performance with Beanie Hat requiring urgent action while Sport Cap performs excellently. Apparel category has seasonal challenges with Summer Top needing clearance but Winter Jacket and Tech Hoodie performing well. Footwear needs moderate intervention to maintain velocity.",
+    "campaign_recommendation": {
+      "duration_days": 14,
+      "expected_profit_uplift": 18500.0,
+      "success_metrics": [
+        "inventory_turnover_increase",
+        "days_of_inventory_reduction",
+        "profit_margin_maintenance"
+      ]
+    }
+  }
+}

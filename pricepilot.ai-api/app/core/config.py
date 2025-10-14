@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     cors_origins: str
     cache_ttl_minutes: int = 30
     clearance_cache_key: str = "clearance_products"
+    use_mock_data: bool = True
 
     class Config:
         env_file = ".env"
