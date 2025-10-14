@@ -30,7 +30,7 @@ export default function CampaignAlert({
           className="flex-shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl"
         >
           <Zap className="w-5 h-5" />
-          Launch Sale Campaign
+          View Analysis
         </button>
       </div>
     </div>
