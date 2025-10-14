@@ -215,7 +215,7 @@ export default function CampaignModal({
               className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
             >
               <Zap className="w-4 h-4" />
-              Start Campaign
+                🔍 Generate Detailed Analysis
             </button>
           </div>
         </div>
