@@ -1,5 +1,5 @@
 # Prompt template as a module-level constant
-CLEARANCE_ANALYSIS_PROMPT = """
+FIND_CLEARANCE_PRODUCTS_PROMPT = """
     You are a retail markdown optimization agent.
 
     Current Date: {current_date}

@@ -2,12 +2,14 @@ import json
 import pandas as pd
 
 from anthropic import AsyncAnthropic
+from anthropic.types import MessageParam
 from typing import Any, Sequence
 from datetime import datetime
 
-from anthropic.types import MessageParam
-
-from app.prompts import CLEARANCE_ANALYSIS_PROMPT
+from app.prompts import (
+    FIND_CLEARANCE_PRODUCTS_PROMPT,
+    VIEW_CLEARANCE_DETAILED_ANALYSIS_PROMPT
+)
 from app.schemas.clearance_candidate import (
     ClearanceAnalysisResponse,
     AnalysisSummary,
@@ -16,11 +18,7 @@ from app.schemas.clearance_candidate import (
 )
 
 
-async def analyze_clearance_products(product_data: Sequence[Any], api_key: str) -> ClearanceAnalysisResponse:
-    """
-    Use Claude AI to analyze products and recommend clearance strategies
-    """
-
+async def find_clearance_products(product_data: Sequence[Any], api_key: str) -> ClearanceAnalysisResponse:
     # Convert RowMapping objects to plain dictionaries
     products_list = [dict(row) for row in product_data]
 
@@ -64,7 +62,7 @@ async def analyze_clearance_products(product_data: Sequence[Any], api_key: str) 
     current_date = datetime.now().strftime('%Y-%m-%d')
     analysis_date = datetime.now().isoformat()
 
-    prompt = CLEARANCE_ANALYSIS_PROMPT.format(
+    prompt = FIND_CLEARANCE_PRODUCTS_PROMPT.format(
         current_date=current_date,
         product_data=json.dumps(products_list, indent=2, default=str),
         summary_statistics=summary_stats,
@@ -137,11 +135,59 @@ async def analyze_clearance_products(product_data: Sequence[Any], api_key: str) 
                 f"Response validation failed: {str(e)}. "
                 f"AI response structure may not match expected schema."
             )
-
-
     except ValueError as e:
         # Re-raise ValueError (API key missing or parsing issues)
         raise
     except Exception as e:
         print(f"Unexpected error in analyze_clearance_products: {e}")
         raise Exception(f"Error analyzing clearance candidates: {str(e)}")
+
+
+async def view_clearance_detailed_analysis(product_data: Sequence[Any], api_key: str) -> str:
+    products_list = [dict(row) for row in product_data]
+
+    df = pd.DataFrame(products_list)
+    if df.empty:
+        return """
+            # Clearance Analysis Report
+            ## No Data Available
+            No products were provided for analysis. Please ensure product data is loaded before requesting a detailed analysis.   
+        """
+
+    summary_columns = ['current_price', 'current_margin', 'margin_percentage', 'stock_on_hand',
+                       'total_units_sold_30d', 'avg_daily_units', 'days_of_inventory']
+
+    available_columns = [col for col in summary_columns if col in df.columns]
+
+    if available_columns:
+        summary_stats = df[available_columns].describe().to_string()
+    else:
+        summary_stats = "No statistical data available"
+
+    prompt = VIEW_CLEARANCE_DETAILED_ANALYSIS_PROMPT.format(
+        len_dataframe=len(products_list),
+        product_data_json=json.dumps(products_list, indent=2, default=str),
+        summary_statistics=summary_stats
+    )
+
+    try:
+        client = AsyncAnthropic(api_key=api_key)
+
+        messages: list[MessageParam] = [{"role": "user", "content": prompt}]
+        message = await client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=8000,  # Higher token limit for detailed analysis
+            messages=messages
+        )
+
+        response_text = message.content[0].text
+        print(f"Received detailed analysis from Claude API (length: {len(response_text)} chars)")
+
+        return response_text.strip()
+
+    except ValueError as e:
+        # Re-raise ValueError (API key missing)
+        raise
+    except Exception as e:
+        print(f"Unexpected error in view_clearance_detailed_analysis: {e}")
+        raise Exception(f"Error generating detailed analysis: {str(e)}")

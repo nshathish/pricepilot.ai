@@ -7,7 +7,8 @@ from app.core.config import Settings, get_settings
 from app.db.sessions import init_db
 from app.api.v1.endpoints import (
     elasticity_endpoints as elasticity,
-    product_endpoints as product
+    product_endpoints as product,
+    clearance_endpoints as clearance
 )
 
 
@@ -33,13 +34,8 @@ app.add_middleware(
 
 app.include_router(product.router, prefix="/api/v1/products", tags=["products"])
 app.include_router(elasticity.router, prefix="/api/v1/elasticity", tags=["elasticity"])
-
+app.include_router(clearance.router, prefix="/api/v1/clearance", tags=["clearance"])
 
 @app.get("/")
 def home(settings: Settings = Depends(get_settings)):
     return {f"message": f"Hello, {settings.app_name}!"}
-
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str | None = None):
-    return {"item_id": item_id, "q": q}

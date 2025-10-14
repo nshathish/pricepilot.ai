@@ -1,12 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 
-from app.core.config import Settings, get_settings
 from app.core.security import get_api_key
-from app.db.repositories.product_repository import get_products_to_filter_by_ai
 from app.db.sessions import get_session
 from app.models import Product
-from app.services.clearance_service import analyze_clearance_products
 
 router = APIRouter(dependencies=[Depends(get_api_key)])
 
@@ -15,12 +12,3 @@ router = APIRouter(dependencies=[Depends(get_api_key)])
 def get_products(session: Session = Depends(get_session)):
     products = session.exec(select(Product)).all()
     return products
-
-
-@router.get("/clearance")
-async def get_products_for_analysis(
-        session: Session = Depends(get_session),
-        settings: Settings = Depends(get_settings)
-):
-    products = get_products_to_filter_by_ai(session)
-    return await analyze_clearance_products(products, settings.anthropy_api_key)

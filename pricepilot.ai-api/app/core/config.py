@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     anthropy_api_key: str
     app_api_key: str
     cors_origins: str
+    cache_ttl_minutes: int = 30
+    clearance_cache_key: str = "clearance_products"
 
     class Config:
         env_file = ".env"

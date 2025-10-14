@@ -95,14 +95,14 @@ priority==2.0.0
     # via hypercorn
 psycopg2-binary==2.9.11
     # via pricepilot-ai-api (pyproject.toml)
-pydantic==2.12.0
+pydantic==2.12.1
     # via
     #   anthropic
     #   fastapi
     #   fastapi-cloud-cli
     #   pydantic-settings
     #   sqlmodel
-pydantic-core==2.41.1
+pydantic-core==2.41.3
     # via pydantic
 pydantic-settings==2.11.0
     # via pricepilot-ai-api (pyproject.toml)
