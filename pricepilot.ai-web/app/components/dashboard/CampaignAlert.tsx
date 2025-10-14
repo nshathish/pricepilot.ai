@@ -1,4 +1,4 @@
-import { AlertCircle, BarChart3, Info, Zap } from 'lucide-react';
+import { BarChart3, Info } from 'lucide-react';
 
 interface CampaignAlertProps {
   onLaunchCampaign: () => void;
