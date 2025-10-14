@@ -38,7 +38,7 @@ export default function CampaignModal({
           <div className="flex items-start justify-between">
             <div>
               <h3 className="text-2xl font-bold text-slate-900 mb-1">
-                Launch Sale Campaign
+                View AI Markdown Analysis
               </h3>
               <p className="text-sm text-slate-500">
                 Review AI recommendations and execute markdown strategy
@@ -214,7 +214,7 @@ export default function CampaignModal({
               className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
             >
               <Zap className="w-4 h-4" />
-              Execute Campaign
+              Start Campaign
             </button>
           </div>
         </div>
