@@ -3,7 +3,7 @@ import { ClearanceAnalysisResponse } from '@/app/types/clearance';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export async function analyzeClearanceProducts(): Promise<ClearanceAnalysisResponse> {
-  const response = await fetch(`${API_BASE_URL}/products/clearance`, {
+  const response = await fetch(`${API_BASE_URL}/clearance/products`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

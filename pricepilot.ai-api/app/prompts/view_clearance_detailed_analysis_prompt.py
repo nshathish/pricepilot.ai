@@ -43,6 +43,19 @@ VIEW_CLEARANCE_DETAILED_ANALYSIS_PROMPT = """
     6. **CAMPAIGN PLAN**
        - Duration, timing, expected profit uplift
        - Success metrics
+       - **Marketing Channels**: Recommend specific channels for this campaign based on product categories, urgency, and target audience. Consider:
+         * Email marketing (best for loyal customers, time-sensitive deals)
+         * Instagram/Social media posts (visual products, lifestyle items, younger demographics)
+         * SMS/Push notifications (high urgency, existing app users)
+         * Website banners (broad reach, all visitors)
+         * Paid ads (Facebook/Google) (customer acquisition, specific targeting)
+         * In-store signage (physical locations, impulse purchases)
+       - For each recommended channel, explain:
+         * Why it's suitable for these specific products
+         * Expected reach and conversion rate
+         * Budget considerations (high/medium/low cost)
+         * Timing recommendations (immediate launch vs scheduled)
+
     
     Return your analysis in structured markdown or bullet format. Be specific with numbers and reasoning.
 """
