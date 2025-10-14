@@ -1,0 +1,132 @@
+from fastapi import APIRouter, Request
+from pydantic import BaseModel
+from fastapi.responses import JSONResponse
+
+router = APIRouter()
+
+class ProductRecommendation(BaseModel):
+    product_name: str
+    sku: str
+    category: str
+    current_price: float
+    new_price: float
+    discount_percentage: float
+    stock: int
+    days_left: int
+    unit_cost: float = 0.0
+    holding_cost_per_unit_per_day: float = 0.0
+
+class Insights(BaseModel):
+    campaign_recommendation: dict
+
+class CampaignRequest(BaseModel):
+    products: list[ProductRecommendation]
+    scenario: str
+    insights: Insights
+
+def build_prompt(products, scenario, insights):
+    campaign_summary = f"""
+Campaign Duration: {insights['campaign_recommendation'].get('duration_days', 'N/A')} days
+Expected Profit Uplift: ${insights['campaign_recommendation'].get('expected_profit_uplift', 'N/A')}
+Clearance Deadline: {products[0].get('clearance_end_date', 'N/A') if products else 'N/A'}
+Success Metrics: {', '.join(insights['campaign_recommendation'].get('success_metrics', []))}
+""".strip()
+    if scenario == "email":
+        product_lines = [
+            f"{p['product_name']} (SKU: {p['sku']}, Category: {p['category']}): Current ${p['current_price']}, Markdown {p['discount_percentage']}% → New ${p['new_price']}, Stock: {p['stock']}, Days Left: {p['days_left']}, Holding Cost/Day: ${p.get('holding_cost_per_unit_per_day', 0)}, Est. Uplift: ${((p['new_price'] - p.get('unit_cost', 0)) * p['stock'] + p.get('holding_cost_per_unit_per_day', 0) * p['days_left'] * p['stock']):.2f}"
+            for p in products
+        ]
+        return f"""You are a retail markdown optimization agent. Compose an HTML business email summarizing the campaign for internal review.
+
+Include:
+- A summary of campaign duration, expected profit uplift, clearance deadline, and key metrics.
+- For each product, list: Name, SKU, category, current price, new price, markdown percentage, units to sell, days left, holding cost per unit per day, and estimated net profit uplift.
+- Table format preferred.
+- End with a note about data sources (competitor pricing, elasticity, etc.).
+
+Campaign Summary:
+{campaign_summary}
+
+Products:
+{chr(10).join(product_lines)}
+"""
+    else:
+        product_lines = [
+            f"{p['product_name']}: {p['discount_percentage']}% off (was ${p['current_price']}, now ${p['new_price']}), Only {p['stock']} left!"
+            for p in products
+        ]
+        hashtags = "#Clearance #Deals #LastChance"
+        deadline = products[0].get('clearance_end_date', 'soon') if products else 'soon'
+        return f"""You are a retail marketing AI agent. Write a catchy Instagram post (as HTML) for our clearance event.
+
+Include:
+- Product names, percent off, and a call-to-action to shop before the deadline.
+- Use hashtags for clearance, deals, urgency, and store branding.
+- Make it visually appealing and concise.
+
+Products:
+{chr(10).join(product_lines)}
+Clearance ends on {deadline}! Shop now! {hashtags}
+"""
+
+@router.post("/generate-campaign-content")
+async def generate_campaign_content(request: Request):
+    body = await request.json()
+    products = body.get("products", [])
+    scenario = body.get("scenario", "email")
+    insights = body.get("insights", {})
+
+    prompt = build_prompt(products, scenario, insights)
+
+    # Here you would call your AI provider, e.g. OpenAI, with the prompt and get "content"
+    # For demonstration, we'll mock up the output as before:
+
+    if scenario == "email":
+        # Table rendering logic for email
+        rows = ""
+        for p in products:
+            uplift = ((p['new_price'] - p.get('unit_cost', 0)) * p['stock'] + p.get('holding_cost_per_unit_per_day', 0) * p['days_left'] * p['stock'])
+            rows += f"""
+            <tr>
+              <td>{p['product_name']}</td>
+              <td>{p['sku']}</td>
+              <td>{p['category']}</td>
+              <td>${p['current_price']}</td>
+              <td>${p['new_price']}</td>
+              <td>{p['discount_percentage']}%</td>
+              <td>{p['stock']}</td>
+              <td>{p['days_left']}</td>
+              <td>${p.get('holding_cost_per_unit_per_day', 0)}</td>
+              <td>${uplift:.2f}</td>
+            </tr>
+            """
+        content = f"""
+        <h2>Markdown Profit Optimization Campaign</h2>
+        <table border="1" cellpadding="8" style="border-collapse:collapse;">
+          <thead>
+            <tr>
+              <th>Name</th><th>SKU</th><th>Category</th><th>Current Price</th><th>New Price</th>
+              <th>Discount %</th><th>Stock</th><th>Days Left</th><th>Holding Cost/Day</th><th>Est. Uplift</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows}
+          </tbody>
+        </table>
+        <p style="color:green;">Estimated total profit uplift: <b>${insights.get('campaign_recommendation', {}).get('expected_profit_uplift', 'XXX.XX')}</b></p>
+        <small>Generated by pricepilot.ai using competitor pricing, elasticity, and holding cost data.</small>
+        """
+    else:
+        products_html = "".join([f"<li>{p['product_name']}: {p['discount_percentage']}% off (was ${p['current_price']}, now ${p['new_price']}), Only {p['stock']} left!</li>" for p in products])
+        content = f"""
+        <div style="font-family:sans-serif;padding:12px;background:#fffbe7;">
+          <h3>🔥 Clearance Alert!</h3>
+          <ul>
+          {products_html}
+          </ul>
+          <p>Shop now before clearance ends! <b>#Clearance #Deals #LastChance</b></p>
+          <small>Generated by pricepilot.ai</small>
+        </div>
+        """
+
+    return JSONResponse({"content": content, "prompt": prompt})
