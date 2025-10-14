@@ -5,16 +5,23 @@ import { useRouter } from 'next/navigation';
 
 import { useClearance } from '@/app/contexts/ClearanceContext';
 
+import { viewClearanceAnalysis } from '@/app/lib/services/clearanceProductService';
+
 import DashboardHeader from '@/app/components/dashboard/DashboardHeader';
 import ProductsTable from '@/app/components/dashboard/ProductsTable';
 import CampaignAlert from '@/app/components/dashboard/CampaignAlert';
 import CampaignModal from '@/app/components/dashboard/CampaignModal';
+import LoadingScreen from '@/app/components/dashboard/LoadingScreen';
+
+import type { CampaignAnalysis } from '@/app/types/campaign';
 
 export default function DashboardPage() {
   const router = useRouter();
 
   const { analysisData } = useClearance();
   const [showModal, setShowModal] = useState(false);
+  const [loadingAnalysis, setLoadingAnalysis] = useState(false);
+  const [insights, setInsights] = useState<CampaignAnalysis | null>(null);
 
   useEffect(() => {
     if (!analysisData) {
@@ -22,41 +29,26 @@ export default function DashboardPage() {
     }
   }, [analysisData, router]);
 
+  const handleGenerateDetailedAnalysis = async () => {
+    setLoadingAnalysis(true);
+
+    try {
+      const analysisText = await viewClearanceAnalysis();
+      setInsights(analysisText);
+      setShowModal(true);
+    } catch (error) {
+      console.error('Failed to generate analysis:', error);
+      // Optionally show an error message to the user
+      alert('Failed to generate detailed analysis. Please try again.');
+    } finally {
+      setLoadingAnalysis(false);
+    }
+  };
+
   if (!analysisData) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <svg
-                className="animate-spin h-12 w-12 text-blue-600 mx-auto mb-4"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              <p className="text-slate-600">Loading analysis data...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
-  // Filter products requiring action (discount > 0)
   const productsRequiringAction = analysisData.clearance_candidates.filter(
     (product) => product.ai_recommendation.action === 'discount',
   );
@@ -75,14 +67,16 @@ export default function DashboardPage() {
         <ProductsTable products={analysisData.clearance_candidates} />
 
         {productsRequiringAction.length > 0 && (
-          <CampaignAlert onLaunchCampaign={() => setShowModal(true)} />
+          <CampaignAlert
+            loadingAnalysis={loadingAnalysis}
+            onGenerateDetailedAnalysis={handleGenerateDetailedAnalysis}
+          />
         )}
       </div>
 
       {showModal && (
         <CampaignModal
-          products={productsRequiringAction}
-          insights={analysisData.insights}
+          insights={insights!}
           onClose={() => setShowModal(false)}
           onExecute={() => {
             // Handle campaign execution

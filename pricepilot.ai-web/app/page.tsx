@@ -9,7 +9,6 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
           <div className="bg-white rounded-lg shadow-sm p-6 border border-slate-200">
             <h1 className="text-3xl font-bold text-slate-900 mb-2">
@@ -29,7 +28,6 @@ export default async function Home() {
           </div>
         )}
 
-        {/* Analyze Button */}
         <AnalyzeButton disabled={products.length === 0} />
       </div>
     </div>
