@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Sparkles } from 'lucide-react';
 
 import { useClearance } from '@/app/contexts/ClearanceContext';
-import { analyzeClearanceProducts } from '@/app/lib/services/clearanceProductService';
+import { findClearanceProducts } from '@/app/lib/services/clearanceProductService';
 
 interface AnalyzeButtonProps {
   disabled?: boolean;
@@ -26,8 +26,7 @@ export default function AnalyzeButton({
     setError(null);
 
     try {
-      const result = await analyzeClearanceProducts();
-      console.log('Analysis result:', result);
+      const result = await findClearanceProducts();
       setAnalysisData(result);
 
       router.push('/dashboard');

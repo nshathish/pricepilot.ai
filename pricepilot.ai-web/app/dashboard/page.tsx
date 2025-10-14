@@ -17,7 +17,6 @@ export default function DashboardPage() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    // Redirect back if no data
     if (!analysisData) {
       router.push('/');
     }
