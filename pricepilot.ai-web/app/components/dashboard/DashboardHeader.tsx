@@ -11,13 +11,15 @@ export default function DashboardHeader({
 }: DashboardHeaderProps) {
   return (
     <div className="mb-8">
-          <div class="bg-gradient-to-r from-blue-600 to-blue-650 rounded rounded-lg shadow-sm p-6 border border-slate-200">
-             <div className="flex items-center justify-between">
-               <div>
-                <h1 class="text-3xl font-bold text-slate-900 text-white mb-2">Dynamic Markdown Manager</h1>
-                <p class="text-slate-600 text-white">
-                Manage your product inventory and optimize clearance pricing
-                </p>
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-slate-200">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+              Dynamic Markdown Manager
+            </h1>
+            <p className="text-slate-600">
+              AI-powered clearance optimization for maximum profit
+            </p>
           </div>
           <div className="flex items-center gap-6">
             <div className="text-right">
