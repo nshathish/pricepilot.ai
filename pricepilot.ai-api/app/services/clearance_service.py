@@ -10,15 +10,19 @@ from app.prompts import (
     FIND_CLEARANCE_PRODUCTS_PROMPT,
     VIEW_CLEARANCE_DETAILED_ANALYSIS_PROMPT
 )
-from app.schemas.clearance_candidate import (
-    ClearanceAnalysisResponse,
+from app.schemas.clearance_analysis_response import ClearanceAnalysisResponse
+from app.schemas.clearance_products_response import (
+    ClearanceProductsResponse,
     AnalysisSummary,
     Insights,
     CampaignRecommendation
 )
 
 
-async def find_clearance_products(product_data: Sequence[Any], api_key: str) -> ClearanceAnalysisResponse:
+async def find_clearance_products(
+        product_data: Sequence[Any],
+        api_key: str
+) -> ClearanceProductsResponse:
     # Convert RowMapping objects to plain dictionaries
     products_list = [dict(row) for row in product_data]
 
@@ -27,7 +31,7 @@ async def find_clearance_products(product_data: Sequence[Any], api_key: str) -> 
 
     # Handle empty dataset
     if df.empty:
-        return ClearanceAnalysisResponse(
+        return ClearanceProductsResponse(
             summary=AnalysisSummary(
                 total_products_analyzed=0,
                 products_requiring_action=0,
@@ -109,7 +113,7 @@ async def find_clearance_products(product_data: Sequence[Any], api_key: str) -> 
             parsed_json = json.loads(response_text)
 
             # Then validate with Pydantic
-            analysis_result = ClearanceAnalysisResponse.model_validate(parsed_json)
+            analysis_result = ClearanceProductsResponse.model_validate(parsed_json)
 
             print(f"Successfully parsed and validated response: "
                   f"{analysis_result.summary.total_products_analyzed} products analyzed, "
@@ -143,16 +147,15 @@ async def find_clearance_products(product_data: Sequence[Any], api_key: str) -> 
         raise Exception(f"Error analyzing clearance candidates: {str(e)}")
 
 
-async def view_clearance_detailed_analysis(product_data: Sequence[Any], api_key: str) -> str:
+async def view_clearance_detailed_analysis(
+        product_data: Sequence[Any],
+        api_key: str
+) -> ClearanceAnalysisResponse:
     products_list = [dict(row) for row in product_data]
 
     df = pd.DataFrame(products_list)
     if df.empty:
-        return """
-            # Clearance Analysis Report
-            ## No Data Available
-            No products were provided for analysis. Please ensure product data is loaded before requesting a detailed analysis.   
-        """
+        return ClearanceAnalysisResponse()
 
     summary_columns = ['current_price', 'current_margin', 'margin_percentage', 'stock_on_hand',
                        'total_units_sold_30d', 'avg_daily_units', 'days_of_inventory']
@@ -183,8 +186,45 @@ async def view_clearance_detailed_analysis(product_data: Sequence[Any], api_key:
         response_text = message.content[0].text
         print(f"Received detailed analysis from Claude API (length: {len(response_text)} chars)")
 
-        return response_text.strip()
+        if response_text.startswith("```markdown"):
+            response_text = response_text.replace("```markdown\n", "").replace("```markdown", "")
+        if response_text.startswith("```"):
+            response_text = response_text.replace("```\n", "").replace("```", "")
+        if response_text.endswith("```"):
+            response_text = response_text.replace("```", "").strip()
 
+        response_text = response_text.strip()
+        print(f"Cleaned markdown preview: {response_text}")
+
+        parsed_json = None
+
+        try:
+            parsed_json = json.loads(response_text)
+
+            analysis_result = ClearanceAnalysisResponse.model_validate(parsed_json)
+
+            print("Successfully validated ClearanceAnalysisResponse")
+            return analysis_result
+
+
+        except json.JSONDecodeError as e:
+            print(f"JSON Parse Error: {e}")
+            print(f"Error at position: {e.pos}")
+            print(f"Error line: {e.lineno}, column: {e.colno}")
+            print(f"Response text around error: ...{response_text[max(0, e.pos - 50):e.pos + 50]}...")
+            raise ValueError(
+                f"Failed to parse AI response as JSON: {str(e)}. "
+                f"Response may be malformed. Check logs for details."
+            )
+        except Exception as e:
+            print(f"Validation Error: {e}")
+            print(f"Response type: {type(parsed_json)}")
+            if isinstance(parsed_json, dict):
+                print(f"Response keys: {parsed_json.keys()}")
+            raise ValueError(
+                f"Response validation failed: {str(e)}. "
+                f"AI response structure may not match expected schema."
+            )
     except ValueError as e:
         # Re-raise ValueError (API key missing)
         raise

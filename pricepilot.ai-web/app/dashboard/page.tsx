@@ -10,7 +10,7 @@ import { viewClearanceAnalysis } from '@/app/lib/services/clearanceProductServic
 import DashboardHeader from '@/app/components/dashboard/DashboardHeader';
 import ProductsTable from '@/app/components/dashboard/ProductsTable';
 import CampaignAlert from '@/app/components/dashboard/CampaignAlert';
-import CampaignModal from '@/app/components/dashboard/CampaignModal';
+import CampaignModal from '@/app/components/campaign-modal/CampaignModal';
 import LoadingScreen from '@/app/components/dashboard/LoadingScreen';
 
 import type { CampaignAnalysis } from '@/app/types/campaign';
