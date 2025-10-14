@@ -200,41 +200,7 @@ export default function CampaignModal({
           )}
         </div>
 
-        <div class="bg-blue-50 rounded-lg p-6 border border-blue-100">
-          <div class="flex items-start gap-4">
-            <svg
-              class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              ></path>
-            </svg>
-            <div class="flex-1">
-              <h3 class="font-semibold text-lg mb-2">
-                📊 Ready to Review Detailed Analysis?
-              </h3>
-              <p class="text-gray-600 mb-4">
-                Get comprehensive AI insights including flash sale strategy,
-                marketing channel recommendations, category-specific analysis,
-                and expected profit impact.
-              </p>
-              <button
-                onclick="openModal()"
-                class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm hover:shadow-md"
-              >
-                🔍 Generate Detailed Analysis
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+  
         {/* Footer Actions */}
         <div className="sticky bottom-0 bg-white border-t border-slate-200 p-6">
           <div className="flex gap-3">
