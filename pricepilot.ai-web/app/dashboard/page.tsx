@@ -75,10 +75,7 @@ export default function DashboardPage() {
         <ProductsTable products={analysisData.clearance_candidates} />
 
         {productsRequiringAction.length > 0 && (
-          <CampaignAlert
-            productsRequiringAction={productsRequiringAction.length}
-            onLaunchCampaign={() => setShowModal(true)}
-          />
+          <CampaignAlert onLaunchCampaign={() => setShowModal(true)} />
         )}
       </div>
 
