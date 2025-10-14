@@ -1,8 +1,5 @@
+import { useState, useEffect } from 'react';
 import { Zap, X } from 'lucide-react';
-
-import { getUrgencyColor } from '@/app/lib/utils/formatters';
-// import { calculateNewPrice } from '@/app/lib/utils/calculations';
-
 import type { ClearanceCandidate, Insights } from '@/app/types/clearance';
 
 interface CampaignModalProps {
@@ -18,18 +15,78 @@ export default function CampaignModal({
   onClose,
   onExecute,
 }: CampaignModalProps) {
-  // Calculate total discount value
-  const totalDiscount = products.reduce(
-    (sum, p) =>
-      sum + (p.current_price - p.ai_recommendation.new_price) * p.stock,
-    0,
-  );
+  const [aiContent, setAiContent] = useState({ email: '', instagram: '' });
+  const [selectedTemplate, setSelectedTemplate] = useState<'email' | 'instagram'>('email');
+  const [loading, setLoading] = useState(false);
 
-  // Calculate total potential revenue
-  const totalRevenue = products.reduce(
-    (sum, p) => sum + p.ai_recommendation.new_price * p.stock,
-    0,
-  );
+  // Helper to build business-specific prompt for the AI
+  function getPrompt(scenario: 'email' | 'instagram') {
+    const campaignSummary = `
+Campaign Duration: ${insights.campaign_recommendation.duration_days} days
+Expected Profit Uplift: $${insights.campaign_recommendation.expected_profit_uplift}
+Clearance Deadline: ${products[0]?.clearance_end_date || 'N/A'}
+Success Metrics: ${insights.campaign_recommendation.success_metrics.join(', ')}
+    `.trim();
+
+    if (scenario === 'email') {
+      return `You are a retail markdown optimization agent. Compose an HTML business email summarizing the campaign for internal review.
+
+Include:
+- A summary of campaign duration, expected profit uplift, clearance deadline, and key metrics.
+- For each product, list: Name, SKU, category, current price, new price, markdown percentage, units to sell, days left, holding cost per unit per day, and estimated net profit uplift.
+- Table format preferred.
+- End with a note about data sources (competitor pricing, elasticity, etc.).
+
+Campaign Summary:
+${campaignSummary}
+
+Products:
+${products.map(p =>
+  `${p.product_name} (SKU: ${p.sku}, Category: ${p.category}): Current $${p.current_price}, Markdown ${p.ai_recommendation.discount_percentage}% → New $${p.ai_recommendation.new_price}, Stock: ${p.stock}, Days Left: ${p.days_left}, Holding Cost/Day: $${p.holding_cost_per_unit_per_day || 0}, Est. Uplift: $${((p.ai_recommendation.new_price - p.unit_cost) * p.stock + (p.holding_cost_per_unit_per_day || 0) * p.days_left * p.stock).toFixed(2)}`
+).join('\n')}
+`;
+    } else {
+      return `You are a retail marketing AI agent. Write a catchy Instagram post (as HTML) for our clearance event.
+
+Include:
+- Product names, percent off, and a call-to-action to shop before the deadline.
+- Use hashtags for clearance, deals, urgency, and store branding.
+- Make it visually appealing and concise.
+
+Products:
+${products.map(p =>
+  `${p.product_name}: ${p.ai_recommendation.discount_percentage}% off (was $${p.current_price}, now $${p.ai_recommendation.new_price}), Only ${p.stock} left!`
+).join('\n')}
+Clearance ends on ${products[0]?.clearance_end_date || 'soon'}! Shop now! #Clearance #Deals #LastChance #${p.category.replace(/\s/g, '')}
+`;
+    }
+  }
+
+  async function generateCampaignContent(scenario: 'email' | 'instagram') {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/generate-campaign-content', {
+        method: 'POST',
+        body: JSON.stringify({
+          prompt: getPrompt(scenario),
+          scenario,
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await response.json();
+      setAiContent(prev => ({ ...prev, [scenario]: data.content }));
+    } catch (e) {
+      alert('Failed to generate campaign content. Please try again.');
+    }
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    if (!aiContent[selectedTemplate] && products.length > 0) {
+      generateCampaignContent(selectedTemplate);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTemplate]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -55,152 +112,67 @@ export default function CampaignModal({
         </div>
 
         <div className="p-6">
-          {/* AI Analysis Summary */}
-          <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-5 mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <Zap className="w-5 h-5 text-blue-600" />
-              <p className="font-semibold text-blue-900">
-                AI Analysis Complete
-              </p>
-            </div>
-            <p className="text-sm text-blue-700 leading-relaxed mb-3">
-              Based on inventory levels, sales velocity, competitor pricing, and
-              clearance deadlines, the AI has calculated optimal markdown
-              percentages to maximize profit while ensuring sell-through.
-            </p>
-
-            {/* Campaign Stats */}
-            <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-blue-200">
-              <div>
-                <p className="text-xs text-blue-700 mb-1">Campaign Duration</p>
-                <p className="font-bold text-blue-900">
-                  {insights.campaign_recommendation.duration_days} days
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-blue-700 mb-1">Expected Uplift</p>
-                <p className="font-bold text-green-700">
-                  $
-                  {insights.campaign_recommendation.expected_profit_uplift.toLocaleString()}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-blue-700 mb-1">Total Discount</p>
-                <p className="font-bold text-orange-700">
-                  $
-                  {totalDiscount.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </p>
-              </div>
-            </div>
+          <div className="flex gap-2 mb-4">
+            <button
+              className={`px-4 py-2 rounded-lg border ${selectedTemplate === 'email' ? 'bg-blue-600 text-white' : 'bg-white'}`}
+              onClick={() => setSelectedTemplate('email')}
+            >
+              Email
+            </button>
+            <button
+              className={`px-4 py-2 rounded-lg border ${selectedTemplate === 'instagram' ? 'bg-purple-600 text-white' : 'bg-white'}`}
+              onClick={() => setSelectedTemplate('instagram')}
+            >
+              Instagram Post
+            </button>
           </div>
-
-          {/* Category Insights */}
-          {insights.category_analysis && (
-            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6">
-              <h4 className="font-semibold text-slate-900 mb-2 text-sm">
-                Category Insights
-              </h4>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                {insights.category_analysis}
-              </p>
+          {/* AI Campaign Output */}
+          <div className="bg-gray-50 rounded-lg p-4 mb-4">
+            {loading ? (
+              <div className="text-gray-500 py-8 text-center">Generating {selectedTemplate} campaign content...</div>
+            ) : (
+              <div dangerouslySetInnerHTML={{ __html: aiContent[selectedTemplate] }} />
+            )}
+          </div>
+          <div className="flex gap-2 mb-2">
+            <button
+              className="mr-2 px-4 py-2 bg-green-600 text-white rounded-lg"
+              onClick={() => {
+                const content = aiContent[selectedTemplate];
+                const blob = new Blob([content], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${selectedTemplate}-campaign.html`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              disabled={!aiContent[selectedTemplate]}
+            >
+              Download
+            </button>
+            <button
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+              onClick={() => {
+                navigator.clipboard.writeText(aiContent[selectedTemplate]);
+                alert('Copied to clipboard!');
+              }}
+              disabled={!aiContent[selectedTemplate]}
+            >
+              Copy
+            </button>
+          </div>
+          {selectedTemplate === 'instagram' && (
+            <div className="text-xs mt-2 text-gray-600">
+              Copy the post above and paste it into your Instagram app, or download the HTML to share as needed.
             </div>
           )}
-
-          {/* Products List */}
-          <div className="mb-6">
-            <h4 className="font-semibold text-slate-900 mb-3">
-              Products to Discount ({products.length})
-            </h4>
-            <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
-              {products.map((product) => (
-                <div
-                  key={product.product_id}
-                  className="border border-slate-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <p className="font-semibold text-slate-900">
-                        {product.product_name}
-                      </p>
-                      <p className="text-xs text-slate-500">{product.sku}</p>
-                    </div>
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-xs font-medium border ${product.status}`}
-                    >
-                      {product.status}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-4 gap-4 text-sm">
-                    <div>
-                      <p className="text-slate-500 text-xs mb-1">
-                        Current Price
-                      </p>
-                      <p className="font-medium text-slate-900">
-                        ${product.current_price.toFixed(2)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-slate-500 text-xs mb-1">Markdown</p>
-                      <p className="font-bold text-orange-600">
-                        {product.ai_recommendation.discount_percentage.toFixed(
-                          0,
-                        )}
-                        % off
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-slate-500 text-xs mb-1">New Price</p>
-                      <p className="font-bold text-blue-600">
-                        ${product.ai_recommendation.new_price.toFixed(2)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-slate-500 text-xs mb-1">
-                        Stock / Days
-                      </p>
-                      <p className="font-medium text-slate-900">
-                        {product.stock} / {product.days_left}d
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* AI Reasoning (optional, can be toggled) */}
-                  {product.ai_recommendation.reasoning && (
-                    <div className="mt-3 pt-3 border-t border-slate-100">
-                      <p className="text-xs text-slate-600 italic">
-                        💡 {product.ai_recommendation.reasoning}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Success Metrics */}
-          {insights.campaign_recommendation.success_metrics.length > 0 && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-              <h4 className="font-semibold text-green-900 mb-2 text-sm">
-                Success Metrics to Track
-              </h4>
-              <ul className="text-sm text-green-700 space-y-1">
-                {insights.campaign_recommendation.success_metrics.map(
-                  (metric, index) => (
-                    <li key={index} className="flex items-center gap-2">
-                      <span className="inline-block w-1.5 h-1.5 bg-green-600 rounded-full" />
-                      {metric}
-                    </li>
-                  ),
-                )}
-              </ul>
+          {selectedTemplate === 'email' && (
+            <div className="text-xs mt-2 text-gray-600">
+              Download the HTML and use it in your email campaign tool, or copy and paste into your email client.
             </div>
           )}
         </div>
-
-        {/* Footer Actions */}
         <div className="sticky bottom-0 bg-white border-t border-slate-200 p-6">
           <div className="flex gap-3">
             <button
@@ -210,8 +182,12 @@ export default function CampaignModal({
               Cancel
             </button>
             <button
-              onClick={onExecute}
+              onClick={() => {
+                generateCampaignContent(selectedTemplate);
+                onExecute();
+              }}
               className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+              disabled={loading}
             >
               <Zap className="w-4 h-4" />
               Start Campaign
