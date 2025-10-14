@@ -14,7 +14,7 @@ export default function ProductsTable({ products }: ProductsTableProps) {
       <div className="bg-slate-50 border-b border-slate-200 px-6 py-4">
         <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
           <Package className="w-5 h-5" />
-          Clearance Candidates
+          Clearance Products
         </h2>
       </div>
 
