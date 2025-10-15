@@ -22,6 +22,7 @@ export default function Navbar() {
               <span className="ml-1 px-2 py-0.5 text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded">
                 .ai
               </span>
+              <span class="text-xs font-semibold text-gray-900">Where Discounts Meet Intelligence</span>
             </div>
           </Link>
         </div>
