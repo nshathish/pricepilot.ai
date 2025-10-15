@@ -38,7 +38,7 @@ export interface CampaignPhase {
   duration: string;
 }
 
-export interface CampaignAnalysis {
+export interface CampaignAnalysisResponse {
   executive_summary: {
     urgent_action_count: number;
     urgent_products: string[];

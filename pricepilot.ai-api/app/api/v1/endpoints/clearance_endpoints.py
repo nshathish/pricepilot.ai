@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from typing import Any
 
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
@@ -11,7 +10,7 @@ from app.db.repositories.product_repository import get_products_to_filter_by_ai
 from app.db.sessions import get_session
 from app.schemas.clearance_analysis_response import ClearanceAnalysisResponse
 from app.schemas.clearance_products_response import ClearanceProductsResponse
-from app.services.clearance_service import find_clearance_products, view_clearance_detailed_analysis
+from app.services.ai.clearance_service import find_clearance_products, view_clearance_detailed_analysis
 
 router = APIRouter(dependencies=[Depends(get_api_key)])
 

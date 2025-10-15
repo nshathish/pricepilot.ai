@@ -1,9 +1,16 @@
+import LoadingIconInButton from '@/app/components/shared/LoadingIconInButton';
+
 interface ModalFooterProps {
   onClose: () => void;
   onExecute: () => void;
+  isLoading: boolean;
 }
 
-export default function ModalFooter({ onClose, onExecute }: ModalFooterProps) {
+export default function ModalFooter({
+  onClose,
+  onExecute,
+  isLoading = false,
+}: ModalFooterProps) {
   return (
     <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
       <div className="text-sm text-gray-600">
@@ -22,9 +29,17 @@ export default function ModalFooter({ onClose, onExecute }: ModalFooterProps) {
         </button>
         <button
           onClick={onExecute}
-          className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-lg"
+          disabled={isLoading}
+          className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
         >
-          Execute Campaign
+          {isLoading ? (
+            <>
+              <LoadingIconInButton />
+              <span>Running Simulation...</span>
+            </>
+          ) : (
+            'Execute Campaign'
+          )}
         </button>
       </div>
     </div>

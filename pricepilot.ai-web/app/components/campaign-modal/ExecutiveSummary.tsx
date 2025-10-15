@@ -2,10 +2,10 @@ import { AlertCircle, TrendingUp, DollarSign } from 'lucide-react';
 
 import StatCard from '@/app/components/campaign-modal/StatCard';
 
-import type { CampaignAnalysis } from '@/app/types/campaign';
+import type { CampaignAnalysisResponse } from '@/app/types/campaign';
 
 interface ExecutiveSummaryProps {
-  summary: CampaignAnalysis['executive_summary'];
+  summary: CampaignAnalysisResponse['executive_summary'];
 }
 
 export default function ExecutiveSummary({ summary }: ExecutiveSummaryProps) {

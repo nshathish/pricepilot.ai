@@ -2,10 +2,13 @@ import { Calendar, TrendingUp, DollarSign } from 'lucide-react';
 
 import MarketingChannelCard from '@/app/components/campaign-modal/MarketingChannelCard';
 
-import type { CampaignAnalysis, MarketingChannel } from '@/app/types/campaign';
+import type {
+  CampaignAnalysisResponse,
+  MarketingChannel,
+} from '@/app/types/campaign';
 
 interface CampaignPlanProps {
-  plan: CampaignAnalysis['campaign_plan'];
+  plan: CampaignAnalysisResponse['campaign_plan'];
   channels: MarketingChannel[];
 }
 
