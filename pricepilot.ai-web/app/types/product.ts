@@ -15,3 +15,18 @@ export interface Product {
   projectedSellThrough: number;
   recommendedMarkdown: number;
 }
+
+export type ProductListItem = Pick<
+  Product,
+  | 'id'
+  | 'sku'
+  | 'name'
+  | 'category'
+  | 'currentPrice'
+  | 'stock'
+  | 'daysToClearing'
+  | 'recentSalesRate'
+> & {
+  totalHoldingCost?: number;
+  dailyHoldingCost?: number;
+};

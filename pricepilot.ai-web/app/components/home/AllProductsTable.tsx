@@ -1,8 +1,8 @@
 import { Package, Calendar } from 'lucide-react';
 
-import type { Product } from '@/app/types/product';
+import type { ProductListItem } from '@/app/types/product';
 
-type ProductListItem = Pick<
+/*type ProductListItem = Pick<
   Product,
   | 'id'
   | 'sku'
@@ -12,7 +12,10 @@ type ProductListItem = Pick<
   | 'stock'
   | 'daysToClearing'
   | 'recentSalesRate'
->;
+> & {
+  totalHoldingCost?: number;
+  dailyHoldingCost?: number;
+};*/
 
 interface AllProductsTableProps {
   products: ProductListItem[];
@@ -46,6 +49,9 @@ export default function AllProductsTable({ products }: AllProductsTableProps) {
               </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
                 Sales Rate
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                Holding Cost
               </th>
             </tr>
           </thead>
@@ -88,6 +94,16 @@ export default function AllProductsTable({ products }: AllProductsTableProps) {
                   <span className="text-slate-900">
                     {product.recentSalesRate.toFixed(1)} units/day
                   </span>
+                </td>
+                <td className="px-6 py-4">
+                  <div>
+                    <p className="font-semibold text-slate-900">
+                      ${product.totalHoldingCost?.toFixed(2) || '0.00'}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      ${product.dailyHoldingCost?.toFixed(2) || '0.00'}/day
+                    </p>
+                  </div>
                 </td>
               </tr>
             ))}

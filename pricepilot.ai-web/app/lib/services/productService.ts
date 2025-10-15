@@ -4,9 +4,9 @@ import {
   calculateSalesRate,
 } from '@/app/lib/utils/calculations';
 
-import type { Product, UrgencyLevel } from '@/app/types/product';
+import type { ProductListItem, UrgencyLevel } from '@/app/types/product';
 
-export async function getProductsForDisplay(): Promise<Product[]> {
+export async function getProductsForDisplay(): Promise<ProductListItem[]> {
   const products = await getAllProducts();
 
   return products.map((product) => {
@@ -37,6 +37,8 @@ export async function getProductsForDisplay(): Promise<Product[]> {
         daysToClearing,
       ),
       recommendedMarkdown: 0, // Will be calculated by AI
+      totalHoldingCost: product.totalHoldingCost,
+      dailyHoldingCost: product.dailyHoldingCost,
     };
   });
 }
