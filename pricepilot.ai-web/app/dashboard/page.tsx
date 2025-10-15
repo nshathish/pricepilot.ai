@@ -21,9 +21,7 @@ export default function DashboardPage() {
   const { analysisData, setCampaignAnalysis } = useClearance();
   const [showModal, setShowModal] = useState(false);
   const [loadingAnalysis, setLoadingAnalysis] = useState(false);
-  const [insights, setInsights] = useState<CampaignAnalysisResponse | null>(
-    null,
-  );
+  const [, setInsights] = useState<CampaignAnalysisResponse | null>(null);
 
   useEffect(() => {
     if (!analysisData) {
@@ -79,7 +77,6 @@ export default function DashboardPage() {
 
       {showModal && (
         <CampaignModal
-          insights={insights!}
           onClose={() => setShowModal(false)}
           onExecute={() => {
             // Handle campaign execution
