@@ -1,7 +1,7 @@
 import prisma from '@/app/lib/prisma';
 
 export async function getAllProducts() {
-  return prisma.product.findMany({
+  const products = await prisma.product.findMany({
     include: {
       inventories: true,
       sales: {
@@ -20,6 +20,40 @@ export async function getAllProducts() {
     orderBy: {
       clearanceEndDate: 'asc',
     },
+  });
+
+  return products.map((product) => {
+    const totalStock = product.inventories.reduce(
+      (sum, inv) => sum + inv.stockOnHand,
+      0,
+    );
+
+    const totalUnitsSold = product.sales.reduce(
+      (sum, sale) => sum + sale.unitsSold,
+      0,
+    );
+
+    const salesRate = totalUnitsSold / 30; // Average per day over last 30 days
+
+    const now = new Date();
+    const clearanceDate = new Date(product.clearanceEndDate);
+    const daysLeft = Math.ceil(
+      (clearanceDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    const holdingCostPerDay = Number(product.holdingCostPerUnitPerDay);
+    const dailyHoldingCost = holdingCostPerDay * totalStock;
+    const totalHoldingCost = dailyHoldingCost * Math.max(daysLeft, 0);
+
+    return {
+      ...product,
+      totalStock,
+      salesRate: Number(salesRate.toFixed(1)),
+      daysLeft,
+      holdingCostPerUnitPerDay: holdingCostPerDay,
+      dailyHoldingCost: Number(dailyHoldingCost.toFixed(2)),
+      totalHoldingCost: Number(totalHoldingCost.toFixed(2)),
+    };
   });
 }
 

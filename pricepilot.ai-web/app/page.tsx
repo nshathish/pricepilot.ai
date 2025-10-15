@@ -5,6 +5,7 @@ import { getProductsForDisplay } from '@/app/lib/services/productService';
 
 export default async function Home() {
   const products = await getProductsForDisplay();
+  console.log(products);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
