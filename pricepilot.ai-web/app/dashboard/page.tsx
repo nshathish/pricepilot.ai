@@ -5,46 +5,23 @@ import { useRouter } from 'next/navigation';
 
 import { useClearance } from '@/app/contexts/ClearanceContext';
 
-import { viewClearanceAnalysis } from '@/app/lib/services/clearanceProductService';
-
 import DashboardHeader from '@/app/components/dashboard/DashboardHeader';
 import ProductsTable from '@/app/components/dashboard/ProductsTable';
 import CampaignAlert from '@/app/components/dashboard/CampaignAlert';
 import CampaignModal from '@/app/components/campaign-modal/CampaignModal';
 import LoadingScreen from '@/app/components/dashboard/LoadingScreen';
 
-import type { CampaignAnalysisResponse } from '@/app/types/campaign';
-
 export default function DashboardPage() {
   const router = useRouter();
 
-  const { analysisData, setCampaignAnalysis } = useClearance();
+  const { analysisData } = useClearance();
   const [showModal, setShowModal] = useState(false);
-  const [loadingAnalysis, setLoadingAnalysis] = useState(false);
-  const [, setInsights] = useState<CampaignAnalysisResponse | null>(null);
 
   useEffect(() => {
     if (!analysisData) {
       router.push('/');
     }
   }, [analysisData, router]);
-
-  const handleGenerateDetailedAnalysis = async () => {
-    setLoadingAnalysis(true);
-
-    try {
-      const analysisResponse = await viewClearanceAnalysis();
-      setCampaignAnalysis(analysisResponse);
-      setInsights(analysisResponse);
-      setShowModal(true);
-    } catch (error) {
-      console.error('Failed to generate analysis:', error);
-      // Optionally show an error message to the user
-      alert('Failed to generate detailed analysis. Please try again.');
-    } finally {
-      setLoadingAnalysis(false);
-    }
-  };
 
   if (!analysisData) {
     return <LoadingScreen />;
@@ -68,27 +45,11 @@ export default function DashboardPage() {
         <ProductsTable products={analysisData.clearance_candidates} />
 
         {productsRequiringAction.length > 0 && (
-          <CampaignAlert
-            loadingAnalysis={loadingAnalysis}
-            onGenerateDetailedAnalysis={handleGenerateDetailedAnalysis}
-          />
+          <CampaignAlert onViewDetailedAnalysis={() => setShowModal(true)} />
         )}
       </div>
 
-      {showModal && (
-        <CampaignModal
-          onClose={() => setShowModal(false)}
-          onExecute={() => {
-            // Handle campaign execution
-            console.log(
-              'Executing campaign for products:',
-              productsRequiringAction,
-            );
-            setShowModal(false);
-            // You might want to call an API here to execute the campaign
-          }}
-        />
-      )}
+      {showModal && <CampaignModal onClose={() => setShowModal(false)} />}
     </div>
   );
 }
