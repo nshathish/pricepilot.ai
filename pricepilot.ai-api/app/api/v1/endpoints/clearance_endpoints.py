@@ -11,7 +11,7 @@ from app.services.ai.clearance_service import get_clearance_products_and_detaile
 router = APIRouter(dependencies=[Depends(get_api_key)])
 
 
-@router.get("/", response_model=CombinedAnalysisResponse)
+@router.get("/combined", response_model=CombinedAnalysisResponse)
 async def get_clearance_products_and_analysis(
         session: Session = Depends(get_session),
         settings: Settings = Depends(get_settings)
