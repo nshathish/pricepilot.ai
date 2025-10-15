@@ -14,15 +14,21 @@ export default function Navbar() {
               width={48}
               height={48}
             />
-            <div className="flex items-center">
-              <span className="text-xl font-semibold text-gray-900">PRICE</span>
-              <span className="text-xl font-semibold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
-                PILOT
+            <div className="flex flex-col">
+              <div className="flex items-center space-x-1">
+                <span className="text-xl font-semibold text-gray-900">
+                  PRICE
+                </span>
+                <span className="text-xl font-semibold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+                  PILOT
+                </span>
+                <span className="px-2 py-0.5 text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded">
+                  .ai
+                </span>
+              </div>
+              <span className="text-xs font-semibold text-gray-900">
+                Where Discounts Meet Intelligence
               </span>
-              <span className="ml-1 px-2 py-0.5 text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded">
-                .ai
-              </span>
-              <span class="text-xs font-semibold text-gray-900">Where Discounts Meet Intelligence</span>
             </div>
           </Link>
         </div>
