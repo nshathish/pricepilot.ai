@@ -8,7 +8,8 @@ from app.db.sessions import init_db
 from app.api.v1.endpoints import (
     elasticity_endpoints as elasticity,
     product_endpoints as product,
-    clearance_endpoints as clearance
+    clearance_endpoints as clearance,
+    simulation_endpoints as simulation
 )
 
 
@@ -35,6 +36,7 @@ app.add_middleware(
 app.include_router(product.router, prefix="/api/v1/products", tags=["products"])
 app.include_router(elasticity.router, prefix="/api/v1/elasticity", tags=["elasticity"])
 app.include_router(clearance.router, prefix="/api/v1/clearance", tags=["clearance"])
+app.include_router(simulation.router, prefix="/api/v1/simulation", tags=["simulation"])
 
 @app.get("/")
 def home(settings: Settings = Depends(get_settings)):

@@ -1,11 +1,23 @@
 'use client';
 
-import { ClearanceAnalysisResponse } from '@/app/types/clearance';
 import { createContext, ReactNode, useContext, useState } from 'react';
+
+import type { ClearanceAnalysisResponse } from '@/app/types/clearance';
+import type { CampaignAnalysisResponse } from '@/app/types/campaign';
+import type { MonteCarloResponse } from '@/app/types/simulation';
 
 interface ClearanceContextType {
   analysisData: ClearanceAnalysisResponse | null;
   setAnalysisData: (data: ClearanceAnalysisResponse | null) => void;
+  clearAnalysisData: () => void;
+
+  campaignAnalysis: CampaignAnalysisResponse | null;
+  setCampaignAnalysis: (data: CampaignAnalysisResponse) => void;
+  clearCampaignAnalysis: () => void;
+
+  simulationResult: MonteCarloResponse | null;
+  setSimulationResult: (data: MonteCarloResponse) => void;
+  clearSimulationResult: () => void;
 }
 
 const ClearanceContext = createContext<ClearanceContextType | undefined>(
@@ -15,9 +27,37 @@ const ClearanceContext = createContext<ClearanceContextType | undefined>(
 export function ClearanceProvider({ children }: { children: ReactNode }) {
   const [analysisData, setAnalysisData] =
     useState<ClearanceAnalysisResponse | null>(null);
+  const [campaignAnalysis, setCampaignAnalysis] =
+    useState<CampaignAnalysisResponse | null>(null);
+  const [simulationResult, setSimulationResult] =
+    useState<MonteCarloResponse | null>(null);
+
+  const clearSimulationResult = () => {
+    setSimulationResult(null);
+  };
+
+  const clearCampaignAnalysis = () => {
+    setCampaignAnalysis(null);
+  };
+
+  const clearAnalysisData = () => {
+    setAnalysisData(null);
+  };
 
   return (
-    <ClearanceContext.Provider value={{ analysisData, setAnalysisData }}>
+    <ClearanceContext.Provider
+      value={{
+        analysisData,
+        setAnalysisData,
+        clearAnalysisData,
+        campaignAnalysis,
+        setCampaignAnalysis,
+        clearCampaignAnalysis,
+        simulationResult,
+        setSimulationResult,
+        clearSimulationResult,
+      }}
+    >
       {children}
     </ClearanceContext.Provider>
   );

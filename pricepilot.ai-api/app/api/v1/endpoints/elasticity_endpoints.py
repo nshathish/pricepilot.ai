@@ -6,7 +6,7 @@ from app.core.security import get_api_key
 from app.db.sessions import get_session
 from app.models import Product, ElasticityEstimate
 from app.schemas.elasticity_method import ElasticityMethod
-from app.services.elasticity_service import estimate_elasticity_for_product
+from app.services.ai.elasticity_service import estimate_elasticity_for_product
 
 router = APIRouter(dependencies=[Depends(get_api_key)])
 

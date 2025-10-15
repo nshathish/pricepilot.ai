@@ -95,7 +95,6 @@ async def find_clearance_products(
             response_text = response_text.replace("```json\n", "").replace("```json", "")
         if response_text.startswith("```"):
             response_text = response_text.replace("```\n", "").replace("```", "")
-
         # Remove trailing markdown
         if response_text.endswith("```"):
             response_text = response_text.replace("```", "").strip()

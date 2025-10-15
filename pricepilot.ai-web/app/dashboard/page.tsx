@@ -13,15 +13,17 @@ import CampaignAlert from '@/app/components/dashboard/CampaignAlert';
 import CampaignModal from '@/app/components/campaign-modal/CampaignModal';
 import LoadingScreen from '@/app/components/dashboard/LoadingScreen';
 
-import type { CampaignAnalysis } from '@/app/types/campaign';
+import type { CampaignAnalysisResponse } from '@/app/types/campaign';
 
 export default function DashboardPage() {
   const router = useRouter();
 
-  const { analysisData } = useClearance();
+  const { analysisData, setCampaignAnalysis } = useClearance();
   const [showModal, setShowModal] = useState(false);
   const [loadingAnalysis, setLoadingAnalysis] = useState(false);
-  const [insights, setInsights] = useState<CampaignAnalysis | null>(null);
+  const [insights, setInsights] = useState<CampaignAnalysisResponse | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!analysisData) {
@@ -33,8 +35,9 @@ export default function DashboardPage() {
     setLoadingAnalysis(true);
 
     try {
-      const analysisText = await viewClearanceAnalysis();
-      setInsights(analysisText);
+      const analysisResponse = await viewClearanceAnalysis();
+      setCampaignAnalysis(analysisResponse);
+      setInsights(analysisResponse);
       setShowModal(true);
     } catch (error) {
       console.error('Failed to generate analysis:', error);
