@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sparkles } from 'lucide-react';
 
-import { useClearance } from '@/app/contexts/ClearanceContext';
-import { findClearanceProducts } from '@/app/lib/services/clearanceProductService';
-
 import LoadingIconInButton from '@/app/components/shared/LoadingIconInButton';
+
+import { useClearance } from '@/app/contexts/ClearanceContext';
+import { getCombinedClearanceAnalysis } from '@/app/lib/services/clearanceService';
 
 interface AnalyzeButtonProps {
   disabled?: boolean;
@@ -18,7 +18,7 @@ export default function AnalyzeButton({
 }: AnalyzeButtonProps) {
   const router = useRouter();
 
-  const { setAnalysisData } = useClearance();
+  const { setAnalysisData, setCampaignAnalysis } = useClearance();
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,8 +28,11 @@ export default function AnalyzeButton({
     setError(null);
 
     try {
-      const result = await findClearanceProducts();
-      setAnalysisData(result);
+      const result = await getCombinedClearanceAnalysis();
+      console.log(result);
+      const { clearance_products, campaign_analysis } = result;
+      setAnalysisData(clearance_products);
+      setCampaignAnalysis(campaign_analysis);
 
       router.push('/dashboard');
     } catch (err) {

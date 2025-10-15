@@ -1,15 +1,11 @@
 import { Info } from 'lucide-react';
 
-import LoadingIconInButton from '@/app/components/shared/LoadingIconInButton';
-
 interface CampaignAlertProps {
-  loadingAnalysis: boolean;
-  onGenerateDetailedAnalysis: () => void;
+  onViewDetailedAnalysis: () => void;
 }
 
 export default function CampaignAlert({
-  loadingAnalysis,
-  onGenerateDetailedAnalysis,
+  onViewDetailedAnalysis,
 }: CampaignAlertProps) {
   return (
     <div className="bg-blue-50 rounded-lg p-6 border border-blue-100 mt-6">
@@ -25,18 +21,10 @@ export default function CampaignAlert({
             expected profit impact.
           </p>
           <button
-            onClick={onGenerateDetailedAnalysis}
-            disabled={loadingAnalysis}
+            onClick={onViewDetailedAnalysis}
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm hover:shadow-md"
           >
-            {loadingAnalysis ? (
-              <>
-                <LoadingIconInButton />
-                Generating Analysis...
-              </>
-            ) : (
-              <>🔍 Generate Detailed Analysis</>
-            )}
+            🔍 View Detailed Analysis
           </button>
         </div>
       </div>

@@ -18,7 +18,6 @@ import SuccessMetrics from '@/app/components/campaign-modal/SuccessMetrics';
 
 interface CampaignModalProps {
   onClose: () => void;
-  onExecute: () => void;
 }
 
 export default function CampaignModal({ onClose }: CampaignModalProps) {
