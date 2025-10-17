@@ -1,8 +1,13 @@
+import json
+import time
+from pathlib import Path
+
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
 from app.core.config import Settings, get_settings
 from app.core.security import get_api_key
+from app.db.repositories import CampaignRepository
 from app.db.repositories.product_repository import get_products_to_filter_by_ai
 from app.db.sessions import get_session
 from app.schemas.combined_analysis_response import CombinedAnalysisResponse
@@ -16,8 +21,30 @@ async def get_clearance_products_and_analysis(
         session: Session = Depends(get_session),
         settings: Settings = Depends(get_settings)
 ):
-    products = get_products_to_filter_by_ai(session)
-    return await get_clearance_products_and_detailed_analysis(
-        products,
-        settings.anthropy_api_key,
-    )
+    ai_analysis = {}
+    if not settings.use_mock_data:
+        products = get_products_to_filter_by_ai(session)
+        ai_analysis = await get_clearance_products_and_detailed_analysis(
+            products,
+            settings.anthropy_api_key,
+        )
+    else:
+        mock_file = Path(__file__).parents[4] / "mocks" / "combined_clearance_mock.json"
+        if not mock_file.exists():
+            raise FileNotFoundError(f"Mock file not found at: {mock_file}")
+
+        with open(mock_file, 'r') as f:
+            ai_analysis = json.load(f)
+        time.sleep(10)
+
+        # Save the campaign simulation using repository
+    try:
+        campaign_repo = CampaignRepository(session)
+        simulation = campaign_repo.create_simulation(ai_analysis)
+        ai_analysis["simulation_id"] = simulation.id
+    except Exception as e:
+        print(f"Failed to create simulation: {e}")
+        # Don't fail the request if simulation creation fails
+
+    return ai_analysis
+

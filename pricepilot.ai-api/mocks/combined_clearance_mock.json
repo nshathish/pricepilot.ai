@@ -1,0 +1,361 @@
+{
+    "clearance_products": {
+        "summary": {
+            "total_products_analyzed": 6,
+            "products_requiring_action": 4,
+            "total_potential_revenue_impact": 3184.35,
+            "analysis_timestamp": "2025-10-16T21:45:02.649067"
+        },
+        "clearance_candidates": [
+            {
+                "product_id": 12,
+                "sku": "BEAN-HAT-004",
+                "product_name": "Beanie Hat",
+                "category": "Accessories",
+                "status": "URGENT",
+                "stock": 400,
+                "days_left": 4,
+                "current_price": 12.0,
+                "base_price": 12.0,
+                "sales_rate": 11.88,
+                "projected_sell_percentage": 15.0,
+                "ai_recommendation": {
+                    "action": "discount",
+                    "discount_percentage": 45.0,
+                    "new_price": 6.6,
+                    "reasoning": "High inventory with clearance ending in 4 days requires aggressive markdown to avoid deadstock"
+                },
+                "urgency_score": 95,
+                "risk_factors": [
+                    "approaching_clearance",
+                    "declining_sales_trend",
+                    "high_inventory"
+                ]
+            },
+            {
+                "product_id": 10,
+                "sku": "SUM-TOP-002",
+                "product_name": "Summer Top",
+                "category": "Apparel",
+                "status": "URGENT",
+                "stock": 260,
+                "days_left": 14,
+                "current_price": 35.0,
+                "base_price": 35.0,
+                "sales_rate": 9.65,
+                "projected_sell_percentage": 43.0,
+                "ai_recommendation": {
+                    "action": "discount",
+                    "discount_percentage": 40.0,
+                    "new_price": 21.0,
+                    "reasoning": "Summer inventory must clear before end of season with declining trend"
+                },
+                "urgency_score": 85,
+                "risk_factors": [
+                    "approaching_clearance",
+                    "seasonal_decline",
+                    "declining_sales_trend"
+                ]
+            },
+            {
+                "product_id": 11,
+                "sku": "RUN-SHOE-003",
+                "product_name": "Running Shoes",
+                "category": "Footwear",
+                "status": "MODERATE",
+                "stock": 80,
+                "days_left": 45,
+                "current_price": 100.0,
+                "base_price": 100.0,
+                "sales_rate": 4.77,
+                "projected_sell_percentage": 64.0,
+                "ai_recommendation": {
+                    "action": "discount",
+                    "discount_percentage": 30.0,
+                    "new_price": 70.0,
+                    "reasoning": "Moderate discount to boost sales velocity while maintaining good margins"
+                },
+                "urgency_score": 70,
+                "risk_factors": [
+                    "declining_sales_trend",
+                    "high_unit_value"
+                ]
+            },
+            {
+                "product_id": 9,
+                "sku": "WIN-JKT-001",
+                "product_name": "Winter Jacket",
+                "category": "Apparel",
+                "status": "MODERATE",
+                "stock": 120,
+                "days_left": 76,
+                "current_price": 90.0,
+                "base_price": 90.0,
+                "sales_rate": 7.19,
+                "projected_sell_percentage": 42.0,
+                "ai_recommendation": {
+                    "action": "discount",
+                    "discount_percentage": 25.0,
+                    "new_price": 67.5,
+                    "reasoning": "Seasonal preparation boost to accelerate winter inventory movement"
+                },
+                "urgency_score": 65,
+                "risk_factors": [
+                    "declining_sales_trend",
+                    "seasonal_transition"
+                ]
+            }
+        ],
+        "insights": {
+            "top_priorities": [
+                12,
+                10
+            ],
+            "category_analysis": "Accessories show highest urgency with clearance deadlines, while Apparel items need seasonal transition support",
+            "campaign_recommendation": {
+                "duration_days": 7,
+                "expected_profit_uplift": 4815.8,
+                "success_metrics": [
+                    "inventory_reduction",
+                    "sales_velocity_increase",
+                    "margin_preservation"
+                ]
+            }
+        }
+    },
+    "campaign_analysis": {
+        "executive_summary": {
+            "urgent_action_count": 2,
+            "urgent_products": [
+                "Beanie Hat",
+                "Summer Top"
+            ],
+            "moderate_priority_count": 2,
+            "moderate_products": [
+                "Running Shoes",
+                "Winter Jacket"
+            ],
+            "expected_profit_impact": 4815.8
+        },
+        "navigation_sections": [
+            "Overview",
+            "Beanie Hat",
+            "Summer Top",
+            "Running Shoes",
+            "Winter Jacket",
+            "Campaign Plan",
+            "Success Metrics"
+        ],
+        "products": [
+            {
+                "product_id": 12,
+                "sku": "BEAN-HAT-004",
+                "name": "Beanie Hat",
+                "category": "Accessories",
+                "current_price": 12.0,
+                "stock_units": 400,
+                "sales_rate": 11.88,
+                "natural_sellthrough": 15.0,
+                "days_until_clearance": 4,
+                "urgency_level": "URGENT",
+                "recommended_action": {
+                    "discount_percentage": 45,
+                    "new_price": 6.6,
+                    "expected_velocity_boost": "3–4x velocity boost",
+                    "target_units_sold": 208,
+                    "rationale": "Aggressive markdown needed to clear high inventory before clearance deadline in 4 days",
+                    "marketing_priority": "Highest - Feature prominently in all channels",
+                    "risk_if_no_action": "85% inventory will become deadstock requiring deeper markdowns or disposal"
+                }
+            },
+            {
+                "product_id": 10,
+                "sku": "SUM-TOP-002",
+                "name": "Summer Top",
+                "category": "Apparel",
+                "current_price": 35.0,
+                "stock_units": 260,
+                "sales_rate": 9.65,
+                "natural_sellthrough": 43.0,
+                "days_until_clearance": 14,
+                "urgency_level": "URGENT",
+                "recommended_action": {
+                    "discount_percentage": 40,
+                    "new_price": 21.0,
+                    "expected_velocity_boost": "2–3x velocity boost",
+                    "target_units_sold": 169,
+                    "rationale": "End-of-season summer clearance with declining sales trend requires significant markdown",
+                    "marketing_priority": "High - Include in main campaign messaging",
+                    "risk_if_no_action": "57% inventory remains unsold requiring deeper end-of-season markdowns"
+                }
+            },
+            {
+                "product_id": 11,
+                "sku": "RUN-SHOE-003",
+                "name": "Running Shoes",
+                "category": "Footwear",
+                "current_price": 100.0,
+                "stock_units": 80,
+                "sales_rate": 4.77,
+                "natural_sellthrough": 64.0,
+                "days_until_clearance": 45,
+                "urgency_level": "MODERATE",
+                "recommended_action": {
+                    "discount_percentage": 30,
+                    "new_price": 70.0,
+                    "expected_velocity_boost": "1.5–2x velocity boost",
+                    "target_units_sold": 67,
+                    "rationale": "Moderate discount to boost velocity while preserving healthy margins on high-value item",
+                    "marketing_priority": "Medium - Highlight value proposition",
+                    "risk_if_no_action": null
+                }
+            },
+            {
+                "product_id": 9,
+                "sku": "WIN-JKT-001",
+                "name": "Winter Jacket",
+                "category": "Apparel",
+                "current_price": 90.0,
+                "stock_units": 120,
+                "sales_rate": 7.19,
+                "natural_sellthrough": 42.0,
+                "days_until_clearance": 76,
+                "urgency_level": "MODERATE",
+                "recommended_action": {
+                    "discount_percentage": 25,
+                    "new_price": 67.5,
+                    "expected_velocity_boost": "1.5–2x velocity boost",
+                    "target_units_sold": 90,
+                    "rationale": "Early winter promotion to accelerate seasonal inventory movement and capitalize on weather transitions",
+                    "marketing_priority": "Medium - Position as early winter deal",
+                    "risk_if_no_action": null
+                }
+            }
+        ],
+        "campaign_plan": {
+            "duration_days": 7,
+            "expected_uplift": 4815.8,
+            "total_discount": 8736.0,
+            "phases": [
+                {
+                    "phase": 1,
+                    "name": "Flash Launch",
+                    "products": [
+                        "Beanie Hat",
+                        "Summer Top"
+                    ],
+                    "duration": "Days 1-2"
+                },
+                {
+                    "phase": 2,
+                    "name": "Peak Push",
+                    "products": [
+                        "Beanie Hat",
+                        "Summer Top",
+                        "Running Shoes"
+                    ],
+                    "duration": "Days 3-5"
+                },
+                {
+                    "phase": 3,
+                    "name": "Final Drive",
+                    "products": [
+                        "Running Shoes",
+                        "Winter Jacket"
+                    ],
+                    "duration": "Days 6-7"
+                }
+            ]
+        },
+        "marketing_channels": [
+            {
+                "channel": "Email Marketing",
+                "priority": "High Priority",
+                "why": "Direct reach to engaged customers with personalized offers",
+                "reach": "High - existing subscriber base",
+                "conversion": "High - 15-25% typical rates",
+                "budget": "Low cost per contact",
+                "timing": "Launch Day 1 morning",
+                "products": [
+                    "Beanie Hat",
+                    "Summer Top",
+                    "Running Shoes",
+                    "Winter Jacket"
+                ]
+            },
+            {
+                "channel": "Instagram/Social Media",
+                "priority": "High Priority",
+                "why": "Visual showcase for fashion and lifestyle products",
+                "reach": "Medium-High - broad audience",
+                "conversion": "Medium - 8-12% typical rates",
+                "budget": "Medium - paid promotion recommended",
+                "timing": "Day 1 afternoon, daily posts",
+                "products": [
+                    "Summer Top",
+                    "Winter Jacket",
+                    "Running Shoes"
+                ]
+            },
+            {
+                "channel": "SMS/Push Notifications",
+                "priority": "High Priority",
+                "why": "Immediate urgency messaging for time-sensitive offers",
+                "reach": "Medium - opt-in users only",
+                "conversion": "High - 20-30% typical rates",
+                "budget": "Low cost per message",
+                "timing": "Day 1 evening, Day 3 reminder",
+                "products": [
+                    "Beanie Hat",
+                    "Summer Top"
+                ]
+            },
+            {
+                "channel": "Website Banners",
+                "priority": "Medium Priority",
+                "why": "Capture existing site traffic with prominent placement",
+                "reach": "Medium - site visitors only",
+                "conversion": "Medium - depends on placement",
+                "budget": "No additional cost",
+                "timing": "Live throughout campaign",
+                "products": [
+                    "Running Shoes",
+                    "Winter Jacket",
+                    "Beanie Hat"
+                ]
+            },
+            {
+                "channel": "Retargeting Ads",
+                "priority": "Medium Priority",
+                "why": "Re-engage customers who viewed but didn't purchase",
+                "reach": "Low-Medium - previous visitors",
+                "conversion": "High - 12-18% typical rates",
+                "budget": "Medium - cost per click",
+                "timing": "Days 2-6",
+                "products": [
+                    "Running Shoes",
+                    "Winter Jacket"
+                ]
+            },
+            {
+                "channel": "Affiliate/Partner Network",
+                "priority": "Low Priority",
+                "why": "Extended reach through partner channels",
+                "reach": "Variable - depends on partners",
+                "conversion": "Medium - 6-10% typical rates",
+                "budget": "Commission-based",
+                "timing": "Days 3-7",
+                "products": [
+                    "Summer Top",
+                    "Running Shoes"
+                ]
+            }
+        ],
+        "success_metrics": {
+            "inventory_reduction_target": "Reduce total campaign inventory by 60% (534 units)",
+            "sales_velocity_increase": "Achieve 2.5x average velocity boost across all campaign products",
+            "margin_preservation": "Maintain overall campaign margin above $9 per unit average",
+            "customer_acquisition": "Generate 15% new customer acquisition from flash sale traffic"
+        }
+    }
+}

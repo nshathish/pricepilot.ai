@@ -35,7 +35,7 @@ class ClearanceCandidate(BaseModel):
     base_price: float = Field(description="Original base price")
     sales_rate: float = Field(description="Average daily sales rate")
     projected_sell_percentage: float = Field(
-        ge=0, le=100,
+        ge=0,
         description="Projected sell-through percentage (0-100)"
     )
     ai_recommendation: AIRecommendation = Field(

@@ -1,4 +1,7 @@
+import json
+import time
 from datetime import datetime
+from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Depends
 
@@ -16,6 +19,16 @@ async def full_pipeline(
         clearance_analysis: ClearanceAnalysisResponse,
         settings: Settings = Depends(get_settings)
 ):
+    if (settings.use_mock_data):
+        mock_file = Path(__file__).parents[4] / "mocks" / "monte_carlo_simulation_mock.json"
+        if not mock_file.exists():
+            raise FileNotFoundError(f"Mock file not found at: {mock_file}")
+
+        with open(mock_file, 'r') as f:
+            mock_data = json.load(f)
+        time.sleep(10)
+        return mock_data
+
     try:
         monte_carlo_config = await get_config_for_monte_carlo(
             clearance_analysis,
