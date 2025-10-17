@@ -26,7 +26,7 @@ export default function MaintenancePage() {
           </div>
 
           <h1 className="text-4xl font-bold text-white mb-4">
-            We'll Be Right Back
+            We&#39;ll Be Right Back
           </h1>
 
           <p className="text-lg text-slate-300 mb-2">
