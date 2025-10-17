@@ -38,7 +38,7 @@ export default function ModalFooter({
               <span>Running Simulation...</span>
             </>
           ) : (
-            'Execute Campaign'
+            'Run Simulation'
           )}
         </button>
       </div>

@@ -1,0 +1,277 @@
+{
+    "success": true,
+    "timestamp": "2025-10-16T23:00:33.131011",
+    "campaign_summary": {
+        "products_count": 4,
+        "channels_count": 5,
+        "duration_days": 7,
+        "target_revenue": 2975.8,
+        "urgent_items": 1
+    },
+    "ai_insights": {
+        "critical_risks": [
+            "Beanie Hat urgent deadline in 4 days with $1,800 dead stock risk",
+            "Summer Top seasonal decline with $3,900 potential loss",
+            "Campaign target of $2,976 requires 57% revenue from urgent Beanie Hat sales"
+        ],
+        "recommendations": [
+            "Focus 60-70% of marketing budget on Beanie Hat for first 4 days",
+            "Activate SMS campaigns on Day 1 and Day 6 for maximum reach",
+            "Monitor Beanie Hat velocity closely - need 35+ units/day vs current 11.88",
+            "Front-load email and social campaigns to Days 1-2 for urgency"
+        ],
+        "success_probability_estimate": 0.68
+    },
+    "monte_carlo_config": {
+        "duration_days": 7,
+        "target_revenue": 2976.0,
+        "num_simulations": 1000,
+        "products": [
+            {
+                "name": "Beanie Hat",
+                "sku": "BEAN-HAT-004",
+                "product_id": 0,
+                "current_stock": 400,
+                "target_sellthrough": 208,
+                "urgency_deadline": 4,
+                "original_price": 12.0,
+                "discounted_price": 6.6,
+                "discount_percentage": 45,
+                "baseline_velocity": 11.88,
+                "velocity_multiplier_min": 3.0,
+                "velocity_multiplier_max": 4.0,
+                "priority": "URGENT"
+            },
+            {
+                "name": "Summer Top",
+                "sku": "SUM-TOP-002",
+                "product_id": 1,
+                "current_stock": 260,
+                "target_sellthrough": 169,
+                "urgency_deadline": 14,
+                "original_price": 35.0,
+                "discounted_price": 21.0,
+                "discount_percentage": 40,
+                "baseline_velocity": 9.65,
+                "velocity_multiplier_min": 2.0,
+                "velocity_multiplier_max": 3.0,
+                "priority": "MODERATE"
+            },
+            {
+                "name": "Running Shoes",
+                "sku": "RUN-SHOE-003",
+                "product_id": 2,
+                "current_stock": 80,
+                "target_sellthrough": 60,
+                "urgency_deadline": 45,
+                "original_price": 100.0,
+                "discounted_price": 75.0,
+                "discount_percentage": 25,
+                "baseline_velocity": 4.77,
+                "velocity_multiplier_min": 1.5,
+                "velocity_multiplier_max": 2.0,
+                "priority": "MODERATE"
+            },
+            {
+                "name": "Winter Jacket",
+                "sku": "WIN-JKT-001",
+                "product_id": 3,
+                "current_stock": 120,
+                "target_sellthrough": 75,
+                "urgency_deadline": 76,
+                "original_price": 90.0,
+                "discounted_price": 72.0,
+                "discount_percentage": 20,
+                "baseline_velocity": 7.19,
+                "velocity_multiplier_min": 1.5,
+                "velocity_multiplier_max": 1.5,
+                "priority": "LOW"
+            }
+        ],
+        "channels": {
+            "email": {
+                "reach_mean": 15000,
+                "reach_std": 1250,
+                "conversion_rate_mean": 0.1,
+                "conversion_rate_std": 0.01,
+                "budget": 250
+            },
+            "social": {
+                "reach_mean": 7500,
+                "reach_std": 1250,
+                "conversion_rate_mean": 0.04,
+                "conversion_rate_std": 0.005,
+                "budget": 600
+            },
+            "sms": {
+                "reach_mean": 8000,
+                "reach_std": 500,
+                "conversion_rate_mean": 0.065,
+                "conversion_rate_std": 0.008,
+                "budget": 125,
+                "activation_days": [
+                    1,
+                    6
+                ]
+            },
+            "banner": {
+                "reach_mean": 14000,
+                "reach_std": 1000,
+                "conversion_rate_mean": 0.03,
+                "conversion_rate_std": 0.005,
+                "budget": 0
+            }
+        },
+        "day_multipliers": {
+            "1": {
+                "mean": 1.4,
+                "std": 0.15
+            },
+            "2": {
+                "mean": 1.4,
+                "std": 0.15
+            },
+            "3": {
+                "mean": 1.1,
+                "std": 0.1
+            },
+            "4": {
+                "mean": 1.0,
+                "std": 0.1
+            },
+            "5": {
+                "mean": 1.0,
+                "std": 0.1
+            },
+            "6": {
+                "mean": 1.5,
+                "std": 0.18
+            },
+            "7": {
+                "mean": 0.9,
+                "std": 0.1
+            }
+        }
+    },
+    "simulation_results": {
+        "simulation_summary": {
+            "num_simulations": 1000,
+            "target_revenue": 2976.0,
+            "revenue_mean": 21284.2188,
+            "revenue_std": 878.6706150353272,
+            "revenue_10th_percentile": 20115.42,
+            "revenue_50th_percentile": 21392.4,
+            "revenue_90th_percentile": 22330.499999999996,
+            "probability_of_success": 1.0,
+            "sold_out_all_fraction": 0.019,
+            "traffic_scale_used": 0.075
+        },
+        "product_analysis": {
+            "Beanie Hat": {
+                "current_stock": 400,
+                "target_units": 208,
+                "units_sold_mean": 369.803,
+                "units_sold_std": 32.96810869613239,
+                "units_sold_10th": 322.9,
+                "units_sold_50th": 377.0,
+                "units_sold_90th": 400.0,
+                "probability_of_meeting_target": 1.0,
+                "sellthrough_percentage_mean": 92.45075,
+                "urgency_deadline": 4
+            },
+            "Summer Top": {
+                "current_stock": 260,
+                "target_units": 169,
+                "units_sold_mean": 237.04,
+                "units_sold_std": 23.595558904166687,
+                "units_sold_10th": 203.0,
+                "units_sold_50th": 242.0,
+                "units_sold_90th": 260.0,
+                "probability_of_meeting_target": 0.987,
+                "sellthrough_percentage_mean": 91.16923076923077,
+                "urgency_deadline": 14
+            },
+            "Running Shoes": {
+                "current_stock": 80,
+                "target_units": 60,
+                "units_sold_mean": 77.253,
+                "units_sold_std": 4.568477974117857,
+                "units_sold_10th": 72.0,
+                "units_sold_50th": 80.0,
+                "units_sold_90th": 80.0,
+                "probability_of_meeting_target": 0.992,
+                "sellthrough_percentage_mean": 96.56625,
+                "urgency_deadline": 45
+            },
+            "Winter Jacket": {
+                "current_stock": 120,
+                "target_units": 75,
+                "units_sold_mean": 112.107,
+                "units_sold_std": 9.781285753928264,
+                "units_sold_10th": 98.0,
+                "units_sold_50th": 116.0,
+                "units_sold_90th": 120.0,
+                "probability_of_meeting_target": 0.998,
+                "sellthrough_percentage_mean": 93.4225,
+                "urgency_deadline": 76
+            }
+        }
+    },
+    "interpretation": {
+        "overall_success_rate": "100.0%",
+        "expected_revenue": "$21,392",
+        "worst_case_10th": "$20,115",
+        "best_case_90th": "$22,330",
+        "revenue_range": "$20,115 - $22,330"
+    },
+    "product_details": {
+        "Beanie Hat": {
+            "current_stock": 400,
+            "target_units": 208,
+            "units_sold_mean": 369.803,
+            "units_sold_std": 32.96810869613239,
+            "units_sold_10th": 322.9,
+            "units_sold_50th": 377.0,
+            "units_sold_90th": 400.0,
+            "probability_of_meeting_target": 1.0,
+            "sellthrough_percentage_mean": 92.45075,
+            "urgency_deadline": 4
+        },
+        "Summer Top": {
+            "current_stock": 260,
+            "target_units": 169,
+            "units_sold_mean": 237.04,
+            "units_sold_std": 23.595558904166687,
+            "units_sold_10th": 203.0,
+            "units_sold_50th": 242.0,
+            "units_sold_90th": 260.0,
+            "probability_of_meeting_target": 0.987,
+            "sellthrough_percentage_mean": 91.16923076923077,
+            "urgency_deadline": 14
+        },
+        "Running Shoes": {
+            "current_stock": 80,
+            "target_units": 60,
+            "units_sold_mean": 77.253,
+            "units_sold_std": 4.568477974117857,
+            "units_sold_10th": 72.0,
+            "units_sold_50th": 80.0,
+            "units_sold_90th": 80.0,
+            "probability_of_meeting_target": 0.992,
+            "sellthrough_percentage_mean": 96.56625,
+            "urgency_deadline": 45
+        },
+        "Winter Jacket": {
+            "current_stock": 120,
+            "target_units": 75,
+            "units_sold_mean": 112.107,
+            "units_sold_std": 9.781285753928264,
+            "units_sold_10th": 98.0,
+            "units_sold_50th": 116.0,
+            "units_sold_90th": 120.0,
+            "probability_of_meeting_target": 0.998,
+            "sellthrough_percentage_mean": 93.4225,
+            "urgency_deadline": 76
+        }
+    }
+}

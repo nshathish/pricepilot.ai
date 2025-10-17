@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 
 import { useClearance } from '@/app/contexts/ClearanceContext';
 import {
-  TrendingUp,
   Zap,
   BarChart3,
   Package,
@@ -17,12 +16,6 @@ import type { MonteCarloResponse } from '@/app/types/simulation';
 export default function SimulationSummaryPage() {
   const router = useRouter();
   const { simulationResult, campaignAnalysis } = useClearance();
-
-  /*useEffect(() => {
-    if (!simulationResult) {
-      router.push('/dashboard');
-    }
-  }, [simulationResult, router]);*/
 
   if (!simulationResult || !campaignAnalysis) {
     return (
@@ -46,15 +39,6 @@ export default function SimulationSummaryPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Back Button */}
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Back to Campaign Analysis
-        </button>
-
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
           <div className="flex items-center justify-between mb-6">
@@ -428,10 +412,16 @@ export default function SimulationSummaryPage() {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="flex gap-4">
             <button
-              onClick={() => router.push('/dashboard')}
+              onClick={() => router.push('/')}
               className="flex-1 px-8 py-4 border-2 border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-100 transition-all"
             >
-              Back to Dashboard
+              Start New Analysis
+            </button>
+            <button
+              onClick={() => router.push('/agent-run')}
+              className="flex-1 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg"
+            >
+              Execute Campaign
             </button>
           </div>
         </div>
