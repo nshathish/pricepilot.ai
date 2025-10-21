@@ -3,7 +3,7 @@ import AnalyzeButton from '@/app/components/home/AnalyzeButton';
 
 import { getProductsForDisplay } from '@/app/lib/services/productService';
 
-export default async function Home() {
+export default async function DemoStartPage() {
   const products = await getProductsForDisplay();
 
   return (
