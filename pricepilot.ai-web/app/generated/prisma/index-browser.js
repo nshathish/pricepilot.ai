@@ -20,12 +20,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.17.0
- * Query Engine version: c0aafc03b8ef6cdced8654b9a817999e02457d6a
+ * Prisma Client JS version: 6.17.1
+ * Query Engine version: 272a37d34178c2894197e17273bf937f25acdeac
  */
 Prisma.prismaVersion = {
-  client: "6.17.0",
-  engine: "c0aafc03b8ef6cdced8654b9a817999e02457d6a"
+  client: "6.17.1",
+  engine: "272a37d34178c2894197e17273bf937f25acdeac"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -130,8 +130,12 @@ exports.Prisma.ProductScalarFieldEnum = {
   basePrice: 'basePrice',
   currentPrice: 'currentPrice',
   holdingCostPerUnitPerDay: 'holdingCostPerUnitPerDay',
-  clearanceEndDate: 'clearanceEndDate',
+  expiryDate: 'expiryDate',
   status: 'status',
+  seasonality: 'seasonality',
+  tags: 'tags',
+  minStockLevel: 'minStockLevel',
+  maxStockLevel: 'maxStockLevel',
   createdAt: 'createdAt'
 };
 
@@ -156,7 +160,10 @@ exports.Prisma.SalesDailyScalarFieldEnum = {
   saleDate: 'saleDate',
   unitsSold: 'unitsSold',
   avgUnitPrice: 'avgUnitPrice',
-  promoFlag: 'promoFlag'
+  promoFlag: 'promoFlag',
+  channelId: 'channelId',
+  returnRate: 'returnRate',
+  grossMargin: 'grossMargin'
 };
 
 exports.Prisma.ElasticityEstimateScalarFieldEnum = {
@@ -165,7 +172,40 @@ exports.Prisma.ElasticityEstimateScalarFieldEnum = {
   method: 'method',
   sampleSize: 'sampleSize',
   confidence: 'confidence',
+  featuresUsed: 'featuresUsed',
+  featureCount: 'featureCount',
+  modelRSquared: 'modelRSquared',
+  featureCoefficients: 'featureCoefficients',
   lastUpdated: 'lastUpdated'
+};
+
+exports.Prisma.ChannelScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  averageConversionRate: 'averageConversionRate',
+  isActive: 'isActive',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CampaignScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  campaignType: 'campaignType',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  targetAudience: 'targetAudience',
+  budget: 'budget',
+  status: 'status',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CampaignChannelScalarFieldEnum = {
+  campaignId: 'campaignId',
+  channelId: 'channelId',
+  channelBudget: 'channelBudget',
+  priority: 'priority',
+  customMessage: 'customMessage',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.CompetitorScalarFieldEnum = {
@@ -207,7 +247,12 @@ exports.Prisma.MarkdownActionLogScalarFieldEnum = {
   expectedProfit: 'expectedProfit',
   baselineProfit: 'baselineProfit',
   deltaExpectedProfit: 'deltaExpectedProfit',
-  notes: 'notes'
+  notes: 'notes',
+  markdownPct: 'markdownPct',
+  confidenceScore: 'confidenceScore',
+  triggerReason: 'triggerReason',
+  approvalStatus: 'approvalStatus',
+  campaignId: 'campaignId'
 };
 
 exports.Prisma.ActionOutcomeScalarFieldEnum = {
@@ -221,12 +266,38 @@ exports.Prisma.ActionOutcomeScalarFieldEnum = {
 exports.Prisma.SettingScalarFieldEnum = {
   key: 'key',
   value: 'value',
+  settingType: 'settingType',
+  description: 'description',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  tableName: 'tableName',
+  recordId: 'recordId',
+  action: 'action',
+  oldValues: 'oldValues',
+  newValues: 'newValues',
+  changeSource: 'changeSource',
+  changedAt: 'changedAt'
+};
+
+exports.Prisma.PerformanceMetricScalarFieldEnum = {
+  id: 'id',
+  metricName: 'metricName',
+  metricValue: 'metricValue',
+  dimensions: 'dimensions',
+  measuredAt: 'measuredAt'
 };
 
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.JsonNullValueInput = {
@@ -253,18 +324,70 @@ exports.ProductStatus = exports.$Enums.ProductStatus = {
   discontinued: 'discontinued'
 };
 
+exports.Seasonality = exports.$Enums.Seasonality = {
+  spring: 'spring',
+  summer: 'summer',
+  fall: 'fall',
+  winter: 'winter',
+  year_round: 'year_round'
+};
+
+exports.CampaignType = exports.$Enums.CampaignType = {
+  flash_sale: 'flash_sale',
+  clearance: 'clearance',
+  seasonal: 'seasonal',
+  cross_promotion: 'cross_promotion',
+  end_of_life: 'end_of_life'
+};
+
+exports.CampaignStatus = exports.$Enums.CampaignStatus = {
+  draft: 'draft',
+  active: 'active',
+  paused: 'paused',
+  completed: 'completed',
+  cancelled: 'cancelled'
+};
+
+exports.ApprovalStatus = exports.$Enums.ApprovalStatus = {
+  pending: 'pending',
+  approved: 'approved',
+  auto_approved: 'auto_approved',
+  rejected: 'rejected'
+};
+
+exports.AuditAction = exports.$Enums.AuditAction = {
+  INSERT: 'INSERT',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE',
+  TRUNCATE: 'TRUNCATE'
+};
+
+exports.ChangeSource = exports.$Enums.ChangeSource = {
+  system: 'system',
+  ai_agent: 'ai_agent',
+  manual: 'manual',
+  api: 'api',
+  migration: 'migration',
+  scheduled_job: 'scheduled_job'
+};
+
 exports.Prisma.ModelName = {
   Product: 'Product',
   Inventory: 'Inventory',
   PriceHistory: 'PriceHistory',
   SalesDaily: 'SalesDaily',
   ElasticityEstimate: 'ElasticityEstimate',
+  Channel: 'Channel',
+  Campaign: 'Campaign',
+  CampaignChannel: 'CampaignChannel',
   Competitor: 'Competitor',
   CompetitorPrice: 'CompetitorPrice',
   MarkdownEvaluation: 'MarkdownEvaluation',
   MarkdownActionLog: 'MarkdownActionLog',
   ActionOutcome: 'ActionOutcome',
-  Setting: 'Setting'
+  Setting: 'Setting',
+  AuditLog: 'AuditLog',
+  PerformanceMetric: 'PerformanceMetric'
 };
 
 /**

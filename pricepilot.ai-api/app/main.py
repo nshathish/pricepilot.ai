@@ -12,11 +12,14 @@ from app.api.v1.endpoints import (
     simulation_endpoints as simulation
 )
 
+settings = get_settings()
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup code here
-    init_db()
+    if settings.run_db_check:
+        init_db()
     yield
     # Shutdown code here
     print("Shutting down...")
@@ -24,7 +27,6 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-settings = get_settings()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[settings.cors_origins],  # Accept requests from these origins
@@ -37,6 +39,7 @@ app.include_router(product.router, prefix="/api/v1/products", tags=["products"])
 app.include_router(elasticity.router, prefix="/api/v1/elasticity", tags=["elasticity"])
 app.include_router(clearance.router, prefix="/api/v1/clearance", tags=["clearance"])
 app.include_router(simulation.router, prefix="/api/v1/simulation", tags=["simulation"])
+
 
 @app.get("/")
 def home(settings: Settings = Depends(get_settings)):

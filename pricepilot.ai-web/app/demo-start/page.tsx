@@ -1,5 +1,5 @@
-import AllProductsTable from '@/app/components/home/AllProductsTable';
-import AnalyzeButton from '@/app/components/home/AnalyzeButton';
+import AllProductsTable from '@/app/components/demo-start/AllProductsTable';
+import AnalyzeButton from '@/app/components/demo-start/AnalyzeButton';
 
 import { getProductsForDisplay } from '@/app/lib/services/productService';
 

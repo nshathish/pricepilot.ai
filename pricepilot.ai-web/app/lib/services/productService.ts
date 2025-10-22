@@ -15,7 +15,7 @@ export async function getProductsForDisplay(): Promise<ProductListItem[]> {
       0,
     );
     const recentSalesRate = calculateSalesRate(product.sales);
-    const daysToClearing = calculateDaysToClearing(product.clearanceEndDate);
+    const daysToClearing = calculateDaysToClearing(product.expiryDate!);
 
     return {
       id: Number(product.id),

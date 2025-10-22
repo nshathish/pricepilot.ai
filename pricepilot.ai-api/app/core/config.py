@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     cache_ttl_minutes: int = 30
     clearance_cache_key: str = "clearance_products"
     use_mock_data: bool = True
+    run_db_check: bool = False
 
     class Config:
         env_file = ".env"
