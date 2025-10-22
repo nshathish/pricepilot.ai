@@ -18,7 +18,7 @@ export async function getAllProducts() {
       },
     },
     orderBy: {
-      clearanceEndDate: 'asc',
+      expiryDate: 'asc',
     },
   });
 
@@ -36,7 +36,7 @@ export async function getAllProducts() {
     const salesRate = totalUnitsSold / 30; // Average per day over last 30 days
 
     const now = new Date();
-    const clearanceDate = new Date(product.clearanceEndDate);
+    const clearanceDate = new Date(product.expiryDate!);
     const daysLeft = Math.ceil(
       (clearanceDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
     );
@@ -75,7 +75,7 @@ export async function getProductsNearingClearance(days: number = 30) {
 
   return prisma.product.findMany({
     where: {
-      clearanceEndDate: {
+      expiryDate: {
         lte: futureDate,
       },
       status: 'active',

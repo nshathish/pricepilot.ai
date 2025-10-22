@@ -1,5 +1,6 @@
 from datetime import timedelta, datetime
 from typing import Any, Sequence
+from warnings import deprecated
 
 from sqlalchemy import Row, RowMapping
 from sqlmodel import Session, Numeric, Float, select, func, case, cast, and_, or_
@@ -7,6 +8,7 @@ from sqlmodel import Session, Numeric, Float, select, func, case, cast, and_, or
 from app.models import SalesDaily, PriceHistory, Product, Inventory, ElasticityEstimate
 
 
+@deprecated("This is replaced by the ProductAnalysisService")
 def get_products_to_filter_by_ai(session: Session) -> Sequence[Row[Any] | RowMapping | Any]:
     current_date = datetime.now().date()
     thirty_days_ago = current_date - timedelta(days=30)
@@ -147,11 +149,11 @@ def get_products_to_filter_by_ai(session: Session) -> Sequence[Row[Any] | RowMap
             current_markdown.c.markdown_price,
 
             # Clearance & Risk Flags
-            Product.clearance_end_date,
+            Product.expiry_date,
             case(
                 (and_(
-                    Product.clearance_end_date.isnot(None),
-                    Product.clearance_end_date <= current_date + timedelta(days=30)
+                    Product.expiry_date.isnot(None),
+                    Product.expiry_date <= current_date + timedelta(days=30)
                 ), True),
                 else_=False
             ).label('approaching_clearance'),
@@ -199,8 +201,8 @@ def get_products_to_filter_by_ai(session: Session) -> Sequence[Row[Any] | RowMap
         .order_by(
             case(
                 (and_(
-                    Product.clearance_end_date.isnot(None),
-                    Product.clearance_end_date <= current_date + timedelta(days=30)
+                    Product.expiry_date.isnot(None),
+                    Product.expiry_date <= current_date + timedelta(days=30)
                 ), 1),
                 (func.coalesce(sales_subquery.c.total_units_sold_30d, 0) == 0, 2),
                 (Inventory.stock_on_hand > func.coalesce(sales_subquery.c.avg_daily_units, 0) * 60, 3),

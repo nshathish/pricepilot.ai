@@ -15,7 +15,23 @@ FIND_CLEARANCE_AND_CAMPAIGN_PROMPT = """
     {summary_statistics}
 
     ====================================================================
-    COMMON METRICS AND FORMULAS (APPLY TO BOTH ANALYSES)
+    ANALYSIS APPROACH
+    ====================================================================
+
+    SINGLE ANALYSIS, DUAL OUTPUT FORMAT:
+
+    You will perform ONE comprehensive analysis of all products, then format the results 
+    into TWO JSON sections (clearance_products and campaign_analysis) using the SAME 
+    calculation results.
+
+    ANALYSIS PROCESS:
+    1. Identify products requiring action based on urgency and profit potential
+    2. For each product, calculate discount recommendations and profit impact ONCE
+    3. Sum all profit impacts to get total campaign value
+    4. Format results into both required JSON sections using IDENTICAL values
+
+    ====================================================================
+    COMMON METRICS AND FORMULAS
     ====================================================================
 
     KEY METRICS:
@@ -27,16 +43,20 @@ FIND_CLEARANCE_AND_CAMPAIGN_PROMPT = """
     - Risk: approaching_clearance, zero_sales_flag, overstocked_flag
     - Discount headroom: max_discount_pct_suggested
 
-    CRITICAL PROFIT CALCULATION FORMULA (MUST USE EXACT SAME LOGIC IN BOTH ANALYSES):
+    PROFIT CALCULATION FORMULA (CALCULATE ONCE, USE IN BOTH SECTIONS):
 
-    Step 1: For each product requiring discount:
+    For each product requiring discount:
       - new_price = current_price × (1 - discount_percentage / 100)
       - net_profit_per_unit = new_price - unit_cost
       - expected_units_to_sell = sales_rate × velocity_multiplier × campaign_days
       - product_profit_impact = net_profit_per_unit × expected_units_to_sell
 
-    Step 2: Sum all product_profit_impact values:
-      - total_potential_revenue_impact (or expected_profit_impact) = sum of all product_profit_impact
+    Total campaign profit = sum of all product_profit_impact values
+
+    IMPORTANT: Use this SAME total for:
+    - clearance_products.summary.total_potential_revenue_impact
+    - campaign_analysis.executive_summary.expected_profit_impact  
+    - campaign_analysis.campaign_plan.expected_uplift
 
     Velocity Multiplier Guidelines:
     - 20-30% discount → 1.5-2x velocity
@@ -233,28 +253,43 @@ FIND_CLEARANCE_AND_CAMPAIGN_PROMPT = """
     7. **SUCCESS METRICS**
        - Define clear, measurable targets.
 
-    8. **PROFIT CALCULATIONS (CRITICAL)**
-       - For EACH product in products array:
-         * Calculate net_profit_per_unit = new_price - unit_cost.
-         * Choose velocity_multiplier from guidelines based on discount_percentage.
-         * Choose campaign_days from guidelines based on urgency_level.
-         * Calculate target_units_sold = sales_rate × velocity_multiplier × campaign_days.
-         * Calculate profit_impact = net_profit_per_unit × target_units_sold.
-         * Store ALL these values in calculation_details.
-       - expected_profit_impact in executive_summary = sum of all profit_impact values.
-       - expected_uplift in campaign_plan = same as expected_profit_impact (MUST MATCH EXACTLY).
+    8. **OUTPUT FORMATTING (CRITICAL)**
+       SINGLE ANALYSIS → DUAL OUTPUT:
+
+       Step 1: Perform your analysis once and determine:
+         * Which products need discounts
+         * Recommended discount percentages  
+         * Calculate profit impact for each product
+         * Sum total profit impact
+
+       Step 2: Format into clearance_products section:
+         * Use your analysis results in clearance_candidates array
+         * Set total_potential_revenue_impact = total profit impact from Step 1
+
+       Step 3: Format into campaign_analysis section:
+         * Use SAME products and calculations in products array
+         * Set expected_profit_impact = SAME total profit impact from Step 1
+         * Set expected_uplift = SAME total profit impact from Step 1
+
+       VERIFICATION: These three values must be identical (same number):
+         * clearance_products.summary.total_potential_revenue_impact
+         * campaign_analysis.executive_summary.expected_profit_impact
+         * campaign_analysis.campaign_plan.expected_uplift
 
     9. **NAVIGATION SECTIONS**
        - Include: "Overview", each product name, "Campaign Plan", "Success Metrics".
 
     IMPORTANT:
-    - Respond with ONLY the JSON object.
-    - Do NOT include markdown code blocks (no ```json).
-    - Do NOT include any explanatory text before or after the JSON.
-    - Ensure all JSON is valid and properly formatted.
-    - All numeric values should be numbers, not strings.
-    - Round all currency to 2 decimal places.
-    - Use the EXACT same formulas as the dashboard prompt.
-    - Include calculation_details in EVERY product to show your work.
-    - expected_profit_impact and expected_uplift MUST be calculated the same way and MUST match.
+    - Perform ONE analysis, format into TWO sections
+    - Both sections contain the SAME products with SAME calculations
+    - The three profit totals MUST be identical numbers
+    - Respond with ONLY the JSON object
+    - Do NOT include markdown code blocks (no ```json)
+    - Do NOT include any explanatory text before or after the JSON
+    - Ensure all JSON is valid and properly formatted
+    - All numeric values should be numbers, not strings
+    - Round all currency to 2 decimal places
+    - Include calculation_details in EVERY product to show your work
+
+    THINK OF IT AS: One analysis → Two presentation formats of the same data
 """

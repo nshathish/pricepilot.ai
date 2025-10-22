@@ -5,7 +5,7 @@ from anthropic import AsyncAnthropic
 from anthropic.types import MessageParam
 
 from app.helpers.monte_carlo_prompt_generator import generate_monte_carlo_prompt
-from app.schemas.clearance_analysis_response import ClearanceAnalysisResponse
+from app.schemas.responses.clearance_analysis_response import ClearanceAnalysisResponse
 
 
 async def get_config_for_monte_carlo(

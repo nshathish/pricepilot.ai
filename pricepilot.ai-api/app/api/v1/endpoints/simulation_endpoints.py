@@ -7,8 +7,9 @@ from fastapi import APIRouter, HTTPException, Depends
 
 from app.core.config import Settings, get_settings
 from app.core.security import get_api_key
-from app.schemas.clearance_analysis_response import ClearanceAnalysisResponse
+from app.schemas.responses.clearance_analysis_response import ClearanceAnalysisResponse
 from app.services.ai.simulation_service import get_config_for_monte_carlo
+from app.services.monte_carlo_adapter import convert_clearance_to_monte_carlo
 from app.services.monte_carlo_engine import MonteCarloEngine
 
 router = APIRouter(dependencies=[Depends(get_api_key)])

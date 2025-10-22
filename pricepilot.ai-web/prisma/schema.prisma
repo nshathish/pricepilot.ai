@@ -1,8 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// =====================================================
+// Dynamic Markdown Manager Agent - Prisma Schema
+// MVP Database Schema with AI Enhancements
+// =====================================================
 
 generator client {
   provider = "prisma-client-js"
@@ -14,10 +13,65 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// =====================================================
+// ENUMS
+// =====================================================
+
 enum ProductStatus {
   active
   discontinued
 }
+
+enum Seasonality {
+  spring
+  summer
+  fall
+  winter
+  year_round
+}
+
+enum CampaignType {
+  flash_sale // Quick, urgent sales (24-48 hours)
+  clearance // Getting rid of old/slow inventory
+  seasonal // Holiday, back-to-school, summer sales
+  cross_promotion // Buy X get Y, bundle deals
+  end_of_life // Discontinuing products permanently
+}
+
+enum CampaignStatus {
+  draft // Campaign created but not launched yet
+  active // Currently running campaign
+  paused // Temporarily stopped (can resume)
+  completed // Successfully finished
+  cancelled // Stopped permanently before completion
+}
+
+enum AuditAction {
+  INSERT
+  UPDATE
+  DELETE
+  TRUNCATE
+}
+
+enum ChangeSource {
+  system
+  ai_agent
+  manual
+  api
+  migration
+  scheduled_job
+}
+
+enum ApprovalStatus {
+  pending
+  approved
+  auto_approved
+  rejected
+}
+
+// =====================================================
+// CORE PRODUCT & INVENTORY MODELS
+// =====================================================
 
 model Product {
   id                       BigInt        @id @default(autoincrement()) @map("product_id")
@@ -29,10 +83,18 @@ model Product {
   basePrice                Decimal       @map("base_price") @db.Decimal(12, 4)
   currentPrice             Decimal       @map("current_price") @db.Decimal(12, 4)
   holdingCostPerUnitPerDay Decimal       @default(0) @map("holding_cost_per_unit_per_day") @db.Decimal(12, 4)
-  clearanceEndDate         DateTime      @map("clearance_end_date") @db.Date
+  expiryDate               DateTime?     @map("expiry_date") @db.Date
   status                   ProductStatus @default(active)
-  createdAt                DateTime      @default(now()) @map("created_at") @db.Timestamptz
 
+  // Enhanced MVP fields
+  seasonality   Seasonality? // Seasonal classification for AI decisions
+  tags          String[] // Flexible categorization ['winter', 'premium', 'clearance']
+  minStockLevel Int?         @map("min_stock_level") // Reorder point
+  maxStockLevel Int?         @map("max_stock_level") // Maximum inventory level
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relationships
   inventories         Inventory[]
   priceHistories      PriceHistory[]
   sales               SalesDaily[]
@@ -41,7 +103,11 @@ model Product {
   markdownEvaluations MarkdownEvaluation[]
   markdownActions     MarkdownActionLog[]
 
-  @@index([clearanceEndDate], map: "idx_products_clearance_end_date")
+  @@index([expiryDate], map: "idx_products_expiry_date")
+  @@index([category], map: "idx_products_category")
+  @@index([seasonality], map: "idx_products_seasonality")
+  @@index([status], map: "idx_products_status")
+  @@index([tags], map: "idx_products_tags", type: Gin)
   @@map("products")
 }
 
@@ -54,6 +120,7 @@ model Inventory {
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@id([productId, location])
+  @@index([stockOnHand], map: "idx_inventory_stock")
   @@map("inventory")
 }
 
@@ -67,8 +134,13 @@ model PriceHistory {
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
+  @@index([productId, startedAt], map: "idx_price_history_product_date")
   @@map("price_history")
 }
+
+// =====================================================
+// SALES & ANALYTICS MODELS
+// =====================================================
 
 model SalesDaily {
   productId    BigInt   @map("product_id")
@@ -77,25 +149,99 @@ model SalesDaily {
   avgUnitPrice Decimal  @map("avg_unit_price") @db.Decimal(12, 4)
   promoFlag    Boolean  @default(false) @map("promo_flag")
 
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  // Enhanced fields with proper relationships
+  channelId   BigInt?  @map("channel_id")
+  returnRate  Decimal? @map("return_rate") @db.Decimal(5, 2)
+  grossMargin Decimal? @map("gross_margin") @db.Decimal(12, 4)
+
+  // Relationships
+  product Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  channel Channel? @relation(fields: [channelId], references: [id], onDelete: SetNull)
 
   @@id([productId, saleDate])
   @@index([saleDate], map: "idx_sales_daily_date")
+  @@index([channelId], map: "idx_sales_daily_channel")
   @@map("sales_daily")
 }
 
 model ElasticityEstimate {
-  productId   BigInt   @id @map("product_id")
-  elasticity  Decimal  @db.Decimal(8, 4)
-  method      String
-  sampleSize  Int?     @map("sample_size")
-  confidence  Decimal? @db.Decimal(5, 2)
+  productId           BigInt   @id @map("product_id")
+  elasticity          Decimal  @db.Decimal(8, 4)
+  method              String
+  sampleSize          Int?     @map("sample_size")
+  confidence          Decimal? @db.Decimal(5, 2)
+  featuresUsed        String[] @map("features_used")
+  featureCount        Int?     @map("feature_count")
+  modelRSquared       Decimal? @map("model_r_squared") @db.Decimal(6, 4)
+  featureCoefficients Json?    @map("feature_coefficients")
+
   lastUpdated DateTime @default(now()) @map("last_updated") @db.Timestamptz
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@map("elasticity_estimates")
 }
+
+// =====================================================
+// MARKETING & CAMPAIGN MODELS
+// =====================================================
+
+model Channel {
+  id                    BigInt   @id @default(autoincrement()) @map("channel_id")
+  name                  String   @unique
+  averageConversionRate Decimal? @map("average_conversion_rate") @db.Decimal(5, 2)
+  isActive              Boolean  @default(true) @map("is_active")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relationships
+  sales            SalesDaily[]
+  campaignChannels CampaignChannel[]
+
+  @@map("channels")
+}
+
+model Campaign {
+  id             BigInt         @id @default(autoincrement()) @map("campaign_id")
+  name           String
+  campaignType   CampaignType   @map("campaign_type")
+  startDate      DateTime       @map("start_date") @db.Timestamptz
+  endDate        DateTime       @map("end_date") @db.Timestamptz
+  targetAudience String?        @map("target_audience")
+  budget         Decimal?       @db.Decimal(12, 4)
+  status         CampaignStatus @default(active)
+  createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relationships
+  campaignChannels CampaignChannel[]
+  markdownActions  MarkdownActionLog[]
+
+  @@index([startDate, endDate], map: "idx_campaign_dates")
+  @@index([campaignType, status], map: "idx_campaign_type_status")
+  @@map("campaigns")
+}
+
+model CampaignChannel {
+  campaignId    BigInt   @map("campaign_id")
+  channelId     BigInt   @map("channel_id")
+  channelBudget Decimal? @map("channel_budget") @db.Decimal(12, 4)
+  priority      Int      @default(1) // 1 = highest priority
+  customMessage String?  @map("custom_message")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relationships
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  channel  Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([campaignId, channelId])
+  @@index([campaignId], map: "idx_campaign_channels_campaign")
+  @@index([channelId], map: "idx_campaign_channels_channel")
+  @@index([campaignId, priority], map: "idx_campaign_channels_priority")
+  @@map("campaign_channels")
+}
+
+// =====================================================
+// COMPETITOR ANALYSIS MODELS
+// =====================================================
 
 model Competitor {
   id   BigInt  @id @default(autoincrement()) @map("competitor_id")
@@ -118,8 +264,13 @@ model CompetitorPrice {
 
   @@id([competitorId, productId, priceDate])
   @@index([priceDate], map: "idx_competitor_prices_date")
+  @@index([productId, priceDate], map: "idx_competitor_prices_product_date")
   @@map("competitor_prices")
 }
+
+// =====================================================
+// AI DECISION & ACTION MODELS
+// =====================================================
 
 model MarkdownEvaluation {
   id                     BigInt   @id @default(autoincrement()) @map("eval_id")
@@ -138,6 +289,7 @@ model MarkdownEvaluation {
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
+  @@index([productId, evaluatedAt], map: "idx_markdown_eval_product_date")
   @@map("markdown_evaluations")
 }
 
@@ -153,9 +305,21 @@ model MarkdownActionLog {
   deltaExpectedProfit Decimal  @map("delta_expected_profit") @db.Decimal(14, 4)
   notes               String?
 
+  // Enhanced AI fields
+  markdownPct     Decimal        @map("markdown_pct") @db.Decimal(5, 2)
+  confidenceScore Decimal?       @map("confidence_score") @db.Decimal(3, 2) // 0.00-1.00
+  triggerReason   String?        @map("trigger_reason") // 'slow_velocity', 'expiry', 'competitor'
+  approvalStatus  ApprovalStatus @default(pending) @map("approval_status")
+  campaignId      BigInt?        @map("campaign_id")
+
+  // Relationships
   product  Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  campaign Campaign?       @relation(fields: [campaignId], references: [id], onDelete: SetNull)
   outcomes ActionOutcome[]
 
+  @@index([productId, executedAt], map: "idx_markdown_actions_product_date")
+  @@index([campaignId], map: "idx_markdown_actions_campaign")
+  @@index([approvalStatus], map: "idx_markdown_actions_approval")
   @@map("markdown_actions_log")
 }
 
@@ -172,10 +336,43 @@ model ActionOutcome {
   @@map("action_outcomes")
 }
 
+// =====================================================
+// SYSTEM & AUDIT MODELS
+// =====================================================
+
 model Setting {
-  key       String   @id
-  value     Json     @db.JsonB
-  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  key         String   @id
+  value       Json     @db.JsonB
+  settingType String   @default("string") @map("setting_type") // 'string', 'number', 'boolean', 'json'
+  description String?
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz
 
   @@map("settings")
+}
+
+model AuditLog {
+  id           BigInt       @id @default(autoincrement()) @map("audit_id")
+  tableName    String       @map("table_name")
+  recordId     BigInt       @map("record_id")
+  action       AuditAction
+  oldValues    Json?        @map("old_values") @db.JsonB
+  newValues    Json?        @map("new_values") @db.JsonB
+  changeSource ChangeSource @default(system) @map("change_source")
+  changedAt    DateTime     @default(now()) @map("changed_at") @db.Timestamptz
+
+  @@index([tableName, recordId], map: "idx_audit_table_record")
+  @@index([changedAt], map: "idx_audit_date")
+  @@index([changeSource, changedAt], map: "idx_audit_source_date")
+  @@map("audit_log")
+}
+
+model PerformanceMetric {
+  id          BigInt   @id @default(autoincrement())
+  metricName  String   @map("metric_name")
+  metricValue Decimal  @map("metric_value") @db.Decimal(15, 4)
+  dimensions  Json?    @db.JsonB // Flexible dimensions like {"product_id": 123, "channel_id": 5}
+  measuredAt  DateTime @default(now()) @map("measured_at") @db.Timestamptz
+
+  @@index([metricName, measuredAt], map: "idx_metrics_name_date")
+  @@map("performance_metrics")
 }

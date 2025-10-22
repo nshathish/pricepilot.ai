@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlmodel import SQLModel, Field, Relationship, Column, Integer
+from sqlmodel import SQLModel, Field, Relationship, Column, BigInteger, Numeric
 from datetime import datetime, UTC
 from decimal import Decimal
 
@@ -12,11 +12,11 @@ class PriceHistory(SQLModel, table=True):
     __tablename__ = "price_history"
 
     id: int = Field(
-        sa_column=Column("price_id", Integer, primary_key=True, autoincrement=True)
+        sa_column=Column("price_id", BigInteger, primary_key=True, autoincrement=True)
     )
     product_id: int = Field(foreign_key="products.product_id")
-    price: Decimal
-    markdown_pct: Decimal = 0
+    price: Decimal = Field(sa_column=Column(Numeric(12, 4)))
+    markdown_pct: Decimal = Field(default=Decimal('0'),  sa_column=Column(Numeric(12, 4)))
     started_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     ended_at: datetime | None = None
 

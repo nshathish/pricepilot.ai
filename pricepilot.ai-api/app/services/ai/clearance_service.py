@@ -7,24 +7,22 @@ from typing import Any, Sequence
 from datetime import datetime
 
 from app.prompts.clearance_master_template import FIND_CLEARANCE_AND_CAMPAIGN_PROMPT
-from app.schemas.clearance_analysis_response import ClearanceAnalysisResponse, ExecutiveSummary, CampaignPlan, \
+from app.schemas.responses.clearance_analysis_response import ClearanceAnalysisResponse, ExecutiveSummary, CampaignPlan, \
     SuccessMetrics
-from app.schemas.clearance_products_response import (
+from app.schemas.responses.clearance_products_response import (
     ClearanceProductsResponse,
     AnalysisSummary,
     Insights,
     CampaignRecommendation
 )
-from app.schemas.combined_analysis_response import CombinedAnalysisResponse
+from app.schemas.responses.combined_analysis_response import CombinedAnalysisResponse
 
 
 async def get_clearance_products_and_detailed_analysis(
         product_data: Sequence[Any],
         api_key: str
 ) -> CombinedAnalysisResponse:
-    products_list = [dict(row) for row in product_data]
-
-    df = pd.DataFrame(products_list)
+    df = pd.DataFrame(product_data)
     if df.empty:
         return CombinedAnalysisResponse(
             clearance_products=ClearanceProductsResponse(
@@ -85,10 +83,10 @@ async def get_clearance_products_and_detailed_analysis(
 
     prompt = FIND_CLEARANCE_AND_CAMPAIGN_PROMPT.format(
         current_date=current_date,
-        product_data=json.dumps(products_list, indent=2, default=str),
+        product_data=json.dumps(product_data, indent=2, default=str),
         summary_statistics=summary_stats,
         analysis_date=analysis_date,
-        total_products=len(products_list)
+        total_products=len(product_data)
     )
 
     try:
