@@ -1,0 +1,239 @@
+{
+    "total_days": 7,
+    "initial_products": [
+        {
+            "id": "beanie",
+            "name": "Beanie Hat",
+            "sku": "BEAN-HAT-221",
+            "category": "Accessories",
+            "urgency": "URGENT",
+            "urgencyColor": "red",
+            "initialStock": 250,
+            "currentStock": 250,
+            "soldUnits": 0,
+            "basePrice": 12.0,
+            "currentPrice": 12.0,
+            "currentDiscount": 0,
+            "daysLeft": 7,
+            "holdingCostPerDay": 0.48,
+            "targetSellThrough": 90,
+            "currentSellThrough": 0,
+            "salesVelocity": 35,
+            "status": "monitoring",
+            "activeChannels": [],
+            "totalRevenue": 0,
+            "agentFocus": false
+        },
+        {
+            "id": "summer",
+            "name": "Summer Top",
+            "sku": "TOP-SUM-445",
+            "category": "Apparel",
+            "urgency": "URGENT",
+            "urgencyColor": "red",
+            "initialStock": 180,
+            "currentStock": 180,
+            "soldUnits": 0,
+            "basePrice": 35.0,
+            "currentPrice": 35.0,
+            "currentDiscount": 0,
+            "daysLeft": 7,
+            "holdingCostPerDay": 1.4,
+            "targetSellThrough": 85,
+            "currentSellThrough": 0,
+            "salesVelocity": 25,
+            "status": "monitoring",
+            "activeChannels": [],
+            "totalRevenue": 0,
+            "agentFocus": false
+        },
+        {
+            "id": "shoes",
+            "name": "Running Shoes",
+            "sku": "SHOE-RUN-778",
+            "category": "Footwear",
+            "urgency": "MODERATE",
+            "urgencyColor": "yellow",
+            "initialStock": 230,
+            "currentStock": 230,
+            "soldUnits": 0,
+            "basePrice": 100.0,
+            "currentPrice": 100.0,
+            "currentDiscount": 0,
+            "daysLeft": 14,
+            "holdingCostPerDay": 5.0,
+            "targetSellThrough": 75,
+            "currentSellThrough": 0,
+            "salesVelocity": 15,
+            "status": "monitoring",
+            "activeChannels": [],
+            "totalRevenue": 0,
+            "agentFocus": false
+        },
+        {
+            "id": "jacket",
+            "name": "Winter Jacket",
+            "sku": "JACK-WIN-332",
+            "category": "Outerwear",
+            "urgency": "MODERATE",
+            "urgencyColor": "yellow",
+            "initialStock": 200,
+            "currentStock": 200,
+            "soldUnits": 0,
+            "basePrice": 90.0,
+            "currentPrice": 90.0,
+            "currentDiscount": 0,
+            "daysLeft": 14,
+            "holdingCostPerDay": 4.5,
+            "targetSellThrough": 80,
+            "currentSellThrough": 0,
+            "salesVelocity": 12,
+            "status": "monitoring",
+            "activeChannels": [],
+            "totalRevenue": 0,
+            "agentFocus": false
+        }
+    ],
+    "simulation_plan": {
+        "0": [
+            {
+                "productId": "all",
+                "action": "INITIAL_SCAN",
+                "message": "🤖 Agent starting inventory analysis...",
+                "type": "system"
+            },
+            {
+                "productId": "beanie",
+                "action": "IDENTIFY_URGENT",
+                "message": "⚠️ High stock levels detected for Beanie Hat with limited time remaining",
+                "type": "alert"
+            },
+            {
+                "productId": "summer",
+                "action": "IDENTIFY_URGENT",
+                "message": "⚠️ Summer Top showing slow movement, immediate action required",
+                "type": "alert"
+            },
+            {
+                "productId": "shoes",
+                "action": "IDENTIFY_MODERATE",
+                "message": "📊 Running Shoes inventory requires attention but not critical",
+                "type": "warning"
+            },
+            {
+                "productId": "jacket",
+                "action": "IDENTIFY_MODERATE",
+                "message": "📊 Winter Jacket showing moderate risk levels",
+                "type": "warning"
+            }
+        ],
+        "1": [
+            {
+                "productId": "beanie",
+                "action": "APPLY_MARKDOWN",
+                "message": "💰 Applying 45% markdown to Beanie Hat → $6.60",
+                "discount": 45,
+                "channels": [
+                    "email",
+                    "instagram"
+                ],
+                "type": "action"
+            },
+            {
+                "productId": "summer",
+                "action": "APPLY_MARKDOWN",
+                "message": "💰 Applying 40% markdown to Summer Top → $21.00",
+                "discount": 40,
+                "channels": [
+                    "email",
+                    "facebook"
+                ],
+                "type": "action"
+            }
+        ],
+        "2": [
+            {
+                "productId": "shoes",
+                "action": "APPLY_MARKDOWN",
+                "message": "💰 Applying 30% markdown to Running Shoes → $70.00",
+                "discount": 30,
+                "channels": [
+                    "email"
+                ],
+                "type": "action"
+            },
+            {
+                "productId": "jacket",
+                "action": "APPLY_MARKDOWN",
+                "message": "💰 Applying 25% markdown to Winter Jacket → $67.50",
+                "discount": 25,
+                "channels": [
+                    "instagram"
+                ],
+                "type": "action"
+            }
+        ],
+        "3": [
+            {
+                "productId": "beanie",
+                "action": "MONITOR",
+                "message": "📈 Beanie Hat showing positive response to markdown",
+                "type": "analysis"
+            },
+            {
+                "productId": "summer",
+                "action": "CHANNELS_ACTIVATED",
+                "message": "📱 Activating additional social media promotion for Summer Top",
+                "type": "channel"
+            }
+        ],
+        "4": [
+            {
+                "productId": "shoes",
+                "action": "ADJUST_STRATEGY",
+                "message": "🎯 Increasing email campaign frequency for Running Shoes",
+                "type": "action"
+            },
+            {
+                "productId": "jacket",
+                "action": "MONITOR",
+                "message": "📊 Winter Jacket clearance progressing as expected",
+                "type": "analysis"
+            }
+        ],
+        "5": [
+            {
+                "productId": "beanie",
+                "action": "SUCCESS",
+                "message": "✅ Beanie Hat reaching target sell-through rate",
+                "type": "success"
+            },
+            {
+                "productId": "summer",
+                "action": "WARNING",
+                "message": "⚠️ Summer Top may need additional markdown",
+                "type": "warning"
+            }
+        ],
+        "6": [
+            {
+                "productId": "all",
+                "action": "SUCCESS",
+                "message": "🎉 Campaign completed - Overall 82% sell-through achieved",
+                "type": "success"
+            },
+            {
+                "productId": "shoes",
+                "action": "SUCCESS",
+                "message": "✅ Running Shoes clearance target met",
+                "type": "success"
+            },
+            {
+                "productId": "jacket",
+                "action": "SUCCESS",
+                "message": "✅ Winter Jacket inventory successfully reduced",
+                "type": "success"
+            }
+        ]
+    }
+}

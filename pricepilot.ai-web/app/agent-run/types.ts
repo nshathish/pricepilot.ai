@@ -77,3 +77,9 @@ export type SimulationEvent = {
 };
 
 export type SelectedProduct = 'all' | Product['id'];
+
+export type AgentRunPlan = {
+  total_days: number;
+  initial_products: Product[];
+  simulation_plan: Readonly<Record<number, SimulationEvent[]>>;
+};

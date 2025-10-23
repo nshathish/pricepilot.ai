@@ -1,21 +1,25 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import { useClearance } from '@/app/contexts/ClearanceContext';
 import {
   Zap,
   BarChart3,
   Package,
-  ArrowLeft,
   CheckCircle,
   AlertTriangle,
 } from 'lucide-react';
 import type { MonteCarloResponse } from '@/app/types/simulation';
+import { fetchAgentRunPlan } from '@/app/lib/services/simulationService';
 
 export default function SimulationSummaryPage() {
   const router = useRouter();
-  const { simulationResult, campaignAnalysis } = useClearance();
+  const { simulationResult, campaignAnalysis, setAgentRunPlan } =
+    useClearance();
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!simulationResult || !campaignAnalysis) {
     return (
@@ -34,6 +38,26 @@ export default function SimulationSummaryPage() {
   // Helper to format percentage
   const formatPercent = (value: number): string => {
     return `${(value * 100).toFixed(1)}%`;
+  };
+
+  const handleExecuteCampaign = async () => {
+    setIsExecuting(true);
+    setError(null);
+
+    try {
+      const response = await fetchAgentRunPlan(campaignAnalysis);
+
+      if (!response) {
+        setError('Failed to execute campaign');
+      }
+
+      setAgentRunPlan(response);
+      router.push('/agent-run');
+    } catch (err) {
+      console.error('Error executing campaign:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      setIsExecuting(false);
+    }
   };
 
   return (
@@ -410,6 +434,19 @@ export default function SimulationSummaryPage() {
 
         {/* Action Buttons */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
+          {/* ADD ERROR DISPLAY HERE ⬇️ */}
+          {error && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-red-900 font-semibold mb-1">
+                  Error Executing Campaign
+                </p>
+                <p className="text-red-700 text-sm">{error}</p>
+              </div>
+            </div>
+          )}
+          {/* ⬆️ ERROR DISPLAY ENDS HERE */}
           <div className="flex gap-4">
             <button
               onClick={() => router.push('/')}
@@ -418,10 +455,18 @@ export default function SimulationSummaryPage() {
               Start New Analysis
             </button>
             <button
-              onClick={() => router.push('/agent-run')}
-              className="flex-1 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg"
+              onClick={handleExecuteCampaign}
+              disabled={isExecuting}
+              className="flex-1 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Execute Campaign
+              {isExecuting ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Generating Campaign...
+                </>
+              ) : (
+                'Generate Campaign'
+              )}
             </button>
           </div>
         </div>
