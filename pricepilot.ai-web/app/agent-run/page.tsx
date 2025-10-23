@@ -30,7 +30,7 @@ import type {
 } from '@/app/agent-run/types';
 
 export default function AgentRunPage() {
-  const { agentRunPlan } = useClearance();
+  const { agentRunPlan, campaignAnalysis } = useClearance();
 
   const [currentDay, setCurrentDay] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -49,7 +49,10 @@ export default function AgentRunPage() {
     totalHoldingCostSaved: 0,
   });
 
-  const MAX_DAYS = agentRunPlan!.total_days;
+  const MAX_DAYS =
+    agentRunPlan?.total_days ??
+    campaignAnalysis?.campaign_plan.duration_days ??
+    7;
 
   const executeDay = useCallback(
     (day: number): void => {
