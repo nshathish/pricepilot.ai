@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from app.core.config import Settings, get_settings
 from app.core.security import get_api_key
 from app.schemas.responses.clearance_analysis_response import ClearanceAnalysisResponse
+from app.services.ai.agent_run_service import generate_simulation_typescript
 from app.services.ai.simulation_service import get_config_for_monte_carlo
 from app.services.monte_carlo_engine import MonteCarloEngine
 
@@ -70,3 +71,60 @@ async def full_pipeline(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Pipeline error: {str(e)}")
+
+
+@router.post("/agent-run-plan")
+async def agent_run_plan(
+        clearance_analysis: ClearanceAnalysisResponse,
+        settings: Settings = Depends(get_settings),
+):
+    if (settings.use_mock_data):
+        mock_file = Path(__file__).parents[4] / "mocks" / "agent_plan_mock.json"
+        if not mock_file.exists():
+            raise FileNotFoundError(f"Mock file not found at: {mock_file}")
+
+        with open(mock_file, 'r', encoding='utf-8') as f:  # Add encoding='utf-8'
+            mock_data = json.load(f)
+        time.sleep(10)
+        return mock_data
+
+
+    if len(clearance_analysis.products) == 0:
+        raise HTTPException(
+            status_code=400,
+            detail="No products found in clearance analysis"
+        )
+
+    try:
+        # Calculate basic summary metrics
+        # total_products = len(clearance_analysis.products)
+        # total_revenue_impact = clearance_analysis.executive_summary.expected_profit_impact
+        # total_units = sum(p.stock_units for p in clearance_analysis.products)
+
+        # Generate simulation data using AI
+        ai_result = await generate_simulation_typescript(
+            clearance_analysis,
+            api_key=settings.anthropy_api_key
+        )
+
+        if not ai_result["success"]:
+            raise HTTPException(
+                status_code=500,
+                detail=f"AI generation failed: {ai_result.get('error', 'Unknown error')}"
+            )
+
+        return {
+            "initial_products": ai_result["initial_products"],
+            "simulation_plan": ai_result["simulation_plan"],
+            "total_days": ai_result["total_days"]
+        }
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid clearance analysis data or AI response: {str(e)}"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to generate agent simulation plan: {str(e)}"
+        )

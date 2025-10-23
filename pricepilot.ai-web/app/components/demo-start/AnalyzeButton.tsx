@@ -29,7 +29,6 @@ export default function AnalyzeButton({
 
     try {
       const result = await getCombinedClearanceAnalysis();
-      console.log(result);
       const { clearance_products, campaign_analysis } = result;
       setAnalysisData(clearance_products);
       setCampaignAnalysis(campaign_analysis);

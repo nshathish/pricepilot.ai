@@ -1,6 +1,7 @@
 'use client';
 
 import { JSX, useCallback, useEffect, useState } from 'react';
+import { router } from 'next/client';
 import {
   AlertCircle,
   AlertTriangle,
@@ -17,6 +18,8 @@ import {
   Pause,
 } from 'lucide-react';
 
+import { useClearance } from '@/app/contexts/ClearanceContext';
+
 import type {
   AgentLog,
   GlobalMetrics,
@@ -25,20 +28,18 @@ import type {
   SelectedProduct,
   Urgency,
 } from '@/app/agent-run/types';
-import {
-  INITIAL_PRODUCTS,
-  MAX_DAYS,
-  SIMULATION_PLAN,
-} from '@/app/agent-run/data';
 
-export default function AgentRunPage(): JSX.Element {
+export default function AgentRunPage() {
+  const { agentRunPlan } = useClearance();
+
   const [currentDay, setCurrentDay] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [speed] = useState<number>(1000);
   const [selectedProduct, setSelectedProduct] =
     useState<SelectedProduct>('all');
-
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>(
+    agentRunPlan?.initial_products ?? [],
+  );
   const [agentLogs, setAgentLogs] = useState<AgentLog[]>([]);
   const [globalMetrics, setGlobalMetrics] = useState<GlobalMetrics>({
     totalInventoryValue: 19640,
@@ -48,118 +49,126 @@ export default function AgentRunPage(): JSX.Element {
     totalHoldingCostSaved: 0,
   });
 
-  const executeDay = useCallback((day: number): void => {
-    setCurrentDay(day);
+  const MAX_DAYS = agentRunPlan!.total_days;
 
-    if (day >= MAX_DAYS) {
-      setIsPlaying(false);
-    }
+  const executeDay = useCallback(
+    (day: number): void => {
+      setCurrentDay(day);
 
-    const dayActions = SIMULATION_PLAN[day] ?? [];
+      if (day >= MAX_DAYS) {
+        setIsPlaying(false);
+      }
 
-    dayActions.forEach((action, index) => {
-      setTimeout(() => {
-        // Add to logs
-        setAgentLogs((prev) => [
-          ...prev,
-          {
-            day,
-            time: `Day ${day}, ${9 + index}:00 AM`,
-            productId: action.productId,
-            message: action.message,
-            type: action.type ?? 'info',
-          },
-        ]);
+      const dayActions = agentRunPlan?.simulation_plan[day] ?? [];
 
-        if (action.productId !== 'all') {
-          setProducts((prev) =>
-            prev.map((product) => {
-              if (product.id === action.productId) {
-                const updatedProduct: Product = {
+      dayActions.forEach((action, index) => {
+        setTimeout(() => {
+          // Add to logs
+          setAgentLogs((prev) => [
+            ...prev,
+            {
+              day,
+              time: `Day ${day}, ${9 + index}:00 AM`,
+              productId: action.productId,
+              message: action.message,
+              type: action.type ?? 'info',
+            },
+          ]);
+
+          if (action.productId !== 'all') {
+            setProducts((prev) =>
+              prev.map((product) => {
+                if (product.id === action.productId) {
+                  const updatedProduct: Product = {
+                    ...product,
+                    agentFocus: true,
+                  };
+                  // Apply discount
+                  if (typeof action.discount === 'number') {
+                    updatedProduct.currentDiscount = action.discount;
+                    updatedProduct.currentPrice =
+                      (product.basePrice * (100 - action.discount)) / 100;
+                    updatedProduct.status = 'markdown_active';
+                  }
+
+                  // Update channels
+                  if (action.channels && action.channels.length > 0) {
+                    updatedProduct.activeChannels = action.channels;
+                  }
+
+                  // Simulate sales based on actions
+                  if (
+                    action.action === 'APPLY_MARKDOWN' ||
+                    action.action === 'INCREASE_MARKDOWN'
+                  ) {
+                    const boostFactor = 1 + (action.discount ?? 0) / 20;
+                    const dailySales = Math.floor(
+                      product.salesVelocity * boostFactor,
+                    );
+                    const newStock = Math.max(
+                      0,
+                      product.currentStock - dailySales,
+                    );
+                    const soldUnits = product.initialStock - newStock;
+
+                    updatedProduct.currentStock = newStock;
+                    updatedProduct.soldUnits = soldUnits;
+                    updatedProduct.currentSellThrough =
+                      (soldUnits / product.initialStock) * 100;
+                    updatedProduct.totalRevenue =
+                      product.totalRevenue +
+                      dailySales * updatedProduct.currentPrice;
+                  }
+
+                  // Clear focus after a moment
+                  setTimeout(() => {
+                    setProducts((innerPrev) =>
+                      innerPrev.map((p) =>
+                        p.id === action.productId
+                          ? ({ ...p, agentFocus: false } as Product)
+                          : p,
+                      ),
+                    );
+                  }, 500);
+
+                  return updatedProduct;
+                }
+
+                // Natural sales for other products
+                const naturalSales = Math.floor(
+                  product.salesVelocity * (product.currentDiscount ? 1.5 : 1),
+                );
+                const newStock = Math.max(
+                  0,
+                  product.currentStock - naturalSales,
+                );
+                const soldUnits = product.initialStock - newStock;
+                return {
                   ...product,
-                  agentFocus: true,
+                  currentStock: newStock,
+                  soldUnits,
+                  currentSellThrough: (soldUnits / product.initialStock) * 100,
                 };
-                // Apply discount
-                if (typeof action.discount === 'number') {
-                  updatedProduct.currentDiscount = action.discount;
-                  updatedProduct.currentPrice =
-                    (product.basePrice * (100 - action.discount)) / 100;
-                  updatedProduct.status = 'markdown_active';
-                }
+              }),
+            );
+          }
 
-                // Update channels
-                if (action.channels && action.channels.length > 0) {
-                  updatedProduct.activeChannels = action.channels;
-                }
-
-                // Simulate sales based on actions
-                if (
-                  action.action === 'APPLY_MARKDOWN' ||
-                  action.action === 'INCREASE_MARKDOWN'
-                ) {
-                  const boostFactor = 1 + (action.discount ?? 0) / 20;
-                  const dailySales = Math.floor(
-                    product.salesVelocity * boostFactor,
-                  );
-                  const newStock = Math.max(
-                    0,
-                    product.currentStock - dailySales,
-                  );
-                  const soldUnits = product.initialStock - newStock;
-
-                  updatedProduct.currentStock = newStock;
-                  updatedProduct.soldUnits = soldUnits;
-                  updatedProduct.currentSellThrough =
-                    (soldUnits / product.initialStock) * 100;
-                  updatedProduct.totalRevenue =
-                    product.totalRevenue +
-                    dailySales * updatedProduct.currentPrice;
-                }
-
-                // Clear focus after a moment
-                setTimeout(() => {
-                  setProducts((innerPrev) =>
-                    innerPrev.map((p) =>
-                      p.id === action.productId
-                        ? ({ ...p, agentFocus: false } as Product)
-                        : p,
-                    ),
-                  );
-                }, 500);
-
-                return updatedProduct;
-              }
-
-              // Natural sales for other products
-              const naturalSales = Math.floor(
-                product.salesVelocity * (product.currentDiscount ? 1.5 : 1),
-              );
-              const newStock = Math.max(0, product.currentStock - naturalSales);
-              const soldUnits = product.initialStock - newStock;
-              return {
-                ...product,
-                currentStock: newStock,
-                soldUnits,
-                currentSellThrough: (soldUnits / product.initialStock) * 100,
-              };
-            }),
-          );
-        }
-
-        // Update global metrics
-        setGlobalMetrics((prev) => ({
-          ...prev,
-          projectedProfit: Math.min(2156, prev.projectedProfit + day * 308),
-          productsActioned:
-            action.action === 'APPLY_MARKDOWN'
-              ? prev.productsActioned + 1
-              : prev.productsActioned,
-          avgSellThrough: day * 10 + 15,
-          totalHoldingCostSaved: day * 171,
-        }));
-      }, index * 200);
-    });
-  }, []);
+          // Update global metrics
+          setGlobalMetrics((prev) => ({
+            ...prev,
+            projectedProfit: Math.min(2156, prev.projectedProfit + day * 308),
+            productsActioned:
+              action.action === 'APPLY_MARKDOWN'
+                ? prev.productsActioned + 1
+                : prev.productsActioned,
+            avgSellThrough: day * 10 + 15,
+            totalHoldingCostSaved: day * 171,
+          }));
+        }, index * 200);
+      });
+    },
+    [agentRunPlan, MAX_DAYS],
+  );
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -170,7 +179,7 @@ export default function AgentRunPage(): JSX.Element {
     }, speed);
 
     return () => clearTimeout(timer);
-  }, [isPlaying, currentDay, speed, executeDay]);
+  }, [isPlaying, currentDay, speed, executeDay, MAX_DAYS]);
 
   const resetSimulation = (): void => {
     setCurrentDay(0);
@@ -178,7 +187,7 @@ export default function AgentRunPage(): JSX.Element {
     setSelectedProduct('all');
     setAgentLogs([]);
     setProducts(
-      INITIAL_PRODUCTS.map((p) => ({
+      products.map((p) => ({
         ...p,
         currentStock: p.initialStock,
         soldUnits: 0,
@@ -231,6 +240,22 @@ export default function AgentRunPage(): JSX.Element {
         return <AlertCircle className="w-4 h-4 text-gray-400" />;
     }
   };
+
+  if (!agentRunPlan) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">No agent run plan available</p>
+          <button
+            onClick={() => router.push('/')}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">

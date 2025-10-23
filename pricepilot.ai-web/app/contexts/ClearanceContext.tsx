@@ -5,6 +5,7 @@ import { createContext, ReactNode, useContext, useState } from 'react';
 import type { ClearanceAnalysisResponse } from '@/app/types/clearance';
 import type { CampaignAnalysisResponse } from '@/app/types/campaign';
 import type { MonteCarloResponse } from '@/app/types/simulation';
+import type { AgentRunPlan } from '@/app/agent-run/types';
 
 interface ClearanceContextType {
   analysisData: ClearanceAnalysisResponse | null;
@@ -18,6 +19,10 @@ interface ClearanceContextType {
   simulationResult: MonteCarloResponse | null;
   setSimulationResult: (data: MonteCarloResponse) => void;
   clearSimulationResult: () => void;
+
+  agentRunPlan: AgentRunPlan | null;
+  setAgentRunPlan: (data: AgentRunPlan | null) => void;
+  clearAgentRunPlan: () => void;
 }
 
 const ClearanceContext = createContext<ClearanceContextType | undefined>(
@@ -31,6 +36,7 @@ export function ClearanceProvider({ children }: { children: ReactNode }) {
     useState<CampaignAnalysisResponse | null>(null);
   const [simulationResult, setSimulationResult] =
     useState<MonteCarloResponse | null>(null);
+  const [agentRunPlan, setAgentRunPlan] = useState<AgentRunPlan | null>(null);
 
   const clearSimulationResult = () => {
     setSimulationResult(null);
@@ -42,6 +48,10 @@ export function ClearanceProvider({ children }: { children: ReactNode }) {
 
   const clearAnalysisData = () => {
     setAnalysisData(null);
+  };
+
+  const clearAgentRunPlan = () => {
+    setAgentRunPlan(null);
   };
 
   return (
@@ -56,6 +66,9 @@ export function ClearanceProvider({ children }: { children: ReactNode }) {
         simulationResult,
         setSimulationResult,
         clearSimulationResult,
+        agentRunPlan,
+        setAgentRunPlan,
+        clearAgentRunPlan,
       }}
     >
       {children}
